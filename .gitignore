@@ -1,1 +1,4 @@
 lib/*
+obj
+c_raylib_template_debug
+c_raylib_template_release
