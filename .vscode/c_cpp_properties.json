@@ -1,0 +1,20 @@
+{
+  "version": 4,
+  "configurations": [
+    {
+      "name": "Linux",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "c99",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "linux-gcc-x64",
+      "includePath": [
+        "${workspaceFolder}/src/**",
+        "${workspaceFolder}/lib/raylib/src/**"
+      ],
+      "defines": [
+        "_DEFAULT_SOURCE",
+        "PLATFORM_DESKTOP"
+      ]
+    }
+  ]
+}
