@@ -9,7 +9,7 @@
       "intelliSenseMode": "linux-gcc-x64",
       "includePath": [
         "${workspaceFolder}/src/**",
-        "${workspaceFolder}/lib/raylib/src/**"
+        "${workspaceFolder}/lib/src/**"
       ],
       "defines": [
         "_DEFAULT_SOURCE",

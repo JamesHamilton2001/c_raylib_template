@@ -5,7 +5,7 @@
       "name": "Debug (c_raylib_template)",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/c_raylib_template_debug",
+      "program": "${workspaceFolder}/out/debug",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
@@ -17,7 +17,6 @@
       "setupCommands": [
         {
           "text": "-enable-pretty-printing",
-          // "ignoreFailures": true
           "ignoreFailures": false
         }
       ]

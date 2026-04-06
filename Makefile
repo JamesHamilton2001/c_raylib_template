@@ -1,11 +1,12 @@
 CC := gcc
-TARGET_BASE := c_raylib_template
 
+OUT_DIR := out
 SRC_DIR := src
 OBJ_ROOT := obj
 LIB_DIR := lib
-RAYLIB_DIR := $(LIB_DIR)/raylib
-RAYLIB_SRC := $(RAYLIB_DIR)/src
+RAYLIB_SRC := $(LIB_DIR)/raylib-5.5/src
+
+TARGET_DIR := out
 
 CONFIG ?= release
 
@@ -14,14 +15,14 @@ LDLIBS_COMMON := -lGL -lm -lpthread -ldl -lrt -lX11
 
 ifeq ($(CONFIG),debug)
     OBJ_DIR := $(OBJ_ROOT)/debug
-    TARGET_NAME := $(TARGET_BASE)_debug
+    TARGET_NAME := $(TARGET_DIR)/debug
     CFLAGS_CONFIG := -g -O0
-    RAYLIB_LIB := $(RAYLIB_DIR)/debug/libraylib.a
+    RAYLIB_LIB := $(LIB_DIR)/dbg/libraylib.a
 else ifeq ($(CONFIG),release)
     OBJ_DIR := $(OBJ_ROOT)/release
-    TARGET_NAME := $(TARGET_BASE)_release
+    TARGET_NAME := $(TARGET_DIR)/release
     CFLAGS_CONFIG := -O2 -DNDEBUG
-    RAYLIB_LIB := $(RAYLIB_DIR)/release/libraylib.a
+    RAYLIB_LIB := $(LIB_DIR)/rel/libraylib.a
 else
     $(error CONFIG must be 'debug' or 'release')
 endif
@@ -31,9 +32,7 @@ CFLAGS := $(CFLAGS_COMMON) $(CFLAGS_CONFIG)
 SRCS := $(shell find $(SRC_DIR) -name '*.c')
 OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
 
-.PHONY: all debug release run clean rebuild raylib_install raylib_uninstall
-
-all: $(TARGET_NAME)
+.PHONY: debug release clean
 
 debug:
 	$(MAKE) CONFIG=debug
@@ -51,13 +50,5 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 run: $(TARGET_NAME)
 	./$(TARGET_NAME)
 
-rebuild: clean all
-
 clean:
-	rm -rf $(OBJ_ROOT) $(TARGET_BASE)_debug $(TARGET_BASE)_release
-
-raylib_install:
-	./setup/install_local_raylib.sh
-
-raylib_uninstall:
-	./setup/uninstall_local_raylib.sh
+	rm -rf $(OBJ_ROOT) $(OUT_DIR)

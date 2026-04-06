@@ -33,39 +33,32 @@ cd "$script_dir/.." || { echo "unable to cd project root"; exit 1; }
 
 # project directories
 prjdir="$(pwd)"
-tmpdir="$prjdir/tmp"
 libdir="$prjdir/lib"
-raydir="$libdir/$rl"
-srcdir="$raydir/src"
-dbgdir="$raydir/debug"
-reldir="$raydir/release"
+libsrcdir="$libdir/src"
+libreldir="$libdir/rel"
+libdbgdir="$libdir/dbg"
+
+# setup local raylib space and work dir for download and compile
+mkdir -p "$libdir" "$libsrcdir" "$libreldir" "$libdbgdir"
 
 echo "\"${prjdir}\" downloading local ${rlname}..."
 
-# setup local raylib space and work dir for download and compile
-rm -rf "$srcdir"
-rm -rf "$tmpdir"
-mkdir -p "$tmpdir" "$libdir" "$raydir" "$srcdir" "$dbgdir" "$reldir"
-
 # download raylib source, unpack, cd to src and copy to local lib src
-cd "$tmpdir" || { echo "unable to cd lib work directory"; rm -rf "$tmpdir"; exit 1; }
+cd "$libsrcdir" || { echo "unable to cd lib work directory"; rm -rf "$libdir"; exit 1; }
 curl -fL -o "$rltar" "$rlurl"
 tar -xzf "$rltar"
-cd "$tmpdir/$rlname/src" || { echo "unable to cd to local raylib src"; exit 1; }
-cp -a ./. "$srcdir"
+rm "$libsrcdir/$rltar"
 
-# # build release lib
+cd "$rlname/src/"
+
+# build release lib
 make PLATFORM=PLATFORM_DESKTOP RAYLIB_BUILD_MODE=RELEASE
-cp -a libraylib.a "$reldir/"
+cp -a libraylib.a "$libreldir/"
 make clean
 
 # build debug lib
 make PLATFORM=PLATFORM_DESKTOP RAYLIB_BUILD_MODE=DEBUG
-cp -a libraylib.a "$dbgdir/"
+cp -a libraylib.a "$libdbgdir/"
 make clean
-
-# clean work dir
-cd "$libdir" || { echo "unable to cd to project lib dir"; exit 1; }
-rm -rf "$tmpdir"
 
 echo "\"${prjdir}\" local raylib$tags installed!"
