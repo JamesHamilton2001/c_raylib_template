@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-tags="5.5"
+tags=""
+tag_provided=false
 
 # parse -t, --tag arguments
 while [[ $# -gt 0 ]]; do
@@ -12,6 +13,7 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             tags="$2"
+            tag_provided=true
             shift 2
             ;;
         *)
@@ -20,6 +22,12 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+# enforce required argument
+if [[ "$tag_provided" = false ]]; then
+    echo "Error: --tag or -t is required"
+    exit 1
+fi
 
 # raylib source data
 rl="raylib"

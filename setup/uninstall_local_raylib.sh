@@ -8,8 +8,6 @@ echo "running uninstall_local_raylib for "
 
 prjdir="$(pwd)"
 
-dstdir="$prjdir/lib/raylib-5.5"
-
-rm -rf "$dstdir"
+rm -rf "$prjdir/lib"/raylib-*
 
 echo "\"${prjdir}\" local raylib uninstalled!"

@@ -14,6 +14,10 @@
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb",
       "preLaunchTask": "build-debug",
+      "presentation": {
+        "panel": "dedicated",
+        "reveal": "always",
+      },
       "setupCommands": [
         {
           "text": "-enable-pretty-printing",
