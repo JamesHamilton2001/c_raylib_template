@@ -8,7 +8,7 @@ echo "running uninstall_local_raylib for "
 
 prjdir="$(pwd)"
 
-rm -rf "$prjdir/lib/src"/raylib-*
-rm -rf "$prjdir/lib"/raylib.version*
+rm -rf "$prjdir/lib/src"/raygui-*
+rm -rf "$prjdir/lib/raygui.version"
 
 echo "\"${prjdir}\" local raylib uninstalled!"

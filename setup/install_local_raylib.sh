@@ -49,7 +49,7 @@ libdbgdir="$libdir/dbg"
 # setup local raylib space and work dir for download and compile
 mkdir -p "$libdir" "$libsrcdir" "$libreldir" "$libdbgdir"
 
-echo "\"${prjdir}\" downloading local ${rlname}..."
+echo "downloading local ${rlname}..."
 
 # download raylib source, unpack, cd to src and copy to local lib src
 cd "$libsrcdir" || { echo "unable to cd lib work directory"; rm -rf "$libdir"; exit 1; }
@@ -68,5 +68,7 @@ make clean
 make PLATFORM=PLATFORM_DESKTOP RAYLIB_BUILD_MODE=DEBUG
 cp -a libraylib.a "$libdbgdir/"
 make clean
+
+echo "$tags" > "$libdir/raylib.version"
 
 echo "\"${prjdir}\" local raylib$tags installed!"
