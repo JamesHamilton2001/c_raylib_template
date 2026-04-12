@@ -6,10 +6,13 @@
       "compilerPath": "/usr/bin/gcc",
       "cStandard": "c99",
       "cppStandard": "c++17",
-      "intelliSenseMode": "linux-gcc-x64",
+      "intelliSenseMode": "linux-gcc-x86",
       "includePath": [
-        "${workspaceFolder}/src/**",
-        "${workspaceFolder}/lib/src/**"
+        "${workspaceFolder}",
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/lib/src/raylib-5.5/src",
+        "${workspaceFolder}/lib/src/raygui-4.0/src",
+        "/usr/local/include"
       ],
       "defines": [
         "_DEFAULT_SOURCE",

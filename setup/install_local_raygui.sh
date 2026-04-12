@@ -1,31 +1,10 @@
 #!/bin/bash
 set -e
 
-tags=""
-tag_provided=false
+tags="${1:-}"
 
-# parse -t, --tag arguments
-while [[ $# -gt 0 ]]; do
-    case "$1" in
-        -t|--tag)
-            if [[ -z "$2" || "$2" == -* ]]; then
-                echo "Error: $1 requires a value"
-                exit 1
-            fi
-            tags="$2"
-            tag_provided=true
-            shift 2
-            ;;
-        *)
-            echo "Unknown option: $1"
-            exit 1
-            ;;
-    esac
-done
-
-# enforce required argument
-if [[ "$tag_provided" = false ]]; then
-    echo "Error: --tag or -t is required"
+if [[ -z "$tags" ]]; then
+    echo "Usage: $0 <raygui tag>"
     exit 1
 fi
 
@@ -48,7 +27,7 @@ libdbgdir="$libdir/dbg"
 
 mkdir -p "$libdir" "$libsrcdir" "$libreldir" "$libdbgdir"
 
-echo "\"${prjdir}\" downloading local ${rgname}..."
+echo "\"${prjdir}\" downloading ${rgname}..."
 
 cd "$libsrcdir" || { echo "unable to cd lib work directory"; exit 1; }
 curl -fL -o "$rgtar" "$rgurl"
@@ -72,7 +51,6 @@ rm -f "$libsrcdir/raygui.o"
 gcc -c -g -O0 -DDEBUG -fPIC "$libsrcdir/raygui_impl.c" \
     -I"$libsrcdir/$rgname/src" \
     -o "$libsrcdir/raygui.o"
-
 ar rcs "$libdbgdir/libraygui.a" "$libsrcdir/raygui.o"
 rm -f "$libsrcdir/raygui.o" "$libsrcdir/raygui_impl.c"
 

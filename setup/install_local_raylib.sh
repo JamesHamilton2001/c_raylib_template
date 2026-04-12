@@ -1,31 +1,10 @@
 #!/bin/bash
 set -e
 
-tags=""
-tag_provided=false
+tags="${1:-}"
 
-# parse -t, --tag arguments
-while [[ $# -gt 0 ]]; do
-    case "$1" in
-        -t|--tag)
-            if [[ -z "$2" || "$2" == -* ]]; then
-                echo "Error: $1 requires a value"
-                exit 1
-            fi
-            tags="$2"
-            tag_provided=true
-            shift 2
-            ;;
-        *)
-            echo "Unknown option: $1"
-            exit 1
-            ;;
-    esac
-done
-
-# enforce required argument
-if [[ "$tag_provided" = false ]]; then
-    echo "Error: --tag or -t is required"
+if [[ -z "$tags" ]]; then
+    echo "Usage: $0 <raylib tag>"
     exit 1
 fi
 
