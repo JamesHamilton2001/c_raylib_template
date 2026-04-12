@@ -1,108 +1,126 @@
 #include "brians_brain.h"
 
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
+
+#include "raylib.h"
+
+#include "cellular_automaton.h"
 
 
 
-void briansBrainInit( Grid * gridPtr,
-                      int rows,
-                      int cols,
-                      Color initDeadColour,
-                      Color initDyingColour,
-                      Color initLiveColour )
-{
-    gridPtr->rows = rows;
-    gridPtr->cols = cols;
-    gridPtr->count = rows * cols;
+const Color briansBraindefaultInitColours [ BRIANS_BRAIN_STATE_COUNT ] = {
+    BLACK,
+    RED,
+    WHITE
+};
 
-    gridPtr->stateColours[ CellStateDead ] = initDeadColour;
-    gridPtr->stateColours[ CellStateDying ] = initDyingColour;
-    gridPtr->stateColours[ CellStateLive ] = initLiveColour;
 
-    gridPtr->stateBuffer[ 0 ] = calloc( gridPtr->count, sizeof( CellState ) );
-    gridPtr->stateBuffer[ 1 ] = calloc( gridPtr->count, sizeof( CellState ) );
 
-    gridPtr->newStates = gridPtr->stateBuffer[ 0 ];
-    gridPtr->oldStates = gridPtr->stateBuffer[ 1 ];
+void briansBrainInit(
+    CellularAutomaton * ptr,
+    const Color * initialStateColours,
+    int32_t rows,
+    int32_t cols,
+    uint32_t id,
+    uint32_t seed,
+    CellState * initialStates
+) {
+    const char * name = BRIANS_BRAIN_STR;
 
-    for ( size_t i = 0; i < gridPtr->count; i++ )
+    uint32_t stateCount = BRIANS_BRAIN_STATE_COUNT;
+
+    if ( initialStateColours == NULL )
     {
-        if ( rand( ) % 3 == 0 )
-        {
-            gridPtr->newStates[ i ] = CellStateLive;
-            gridPtr->oldStates[ i ] = CellStateLive;
-        }
+        initialStateColours = briansBraindefaultInitColours;
+    }
+
+    CellularAutomatonInit(
+        ptr,
+        name,
+        stateCount,
+        initialStateColours,
+        briansBrainUpdate,
+        rows,
+        cols,
+        id,
+        seed,
+        initialStates
+    );
+
+    srand( seed );
+
+    for ( int32_t i = 0; i < rows * cols; i++ )
+    {
+        ptr->newStates[ i ] = rand( ) & ( BriansBrainStateDying | BriansBrainStateLive );
     }
 }
 
 
 
-void briansBrainDenit( Grid * gridPtr )
+void briansBrainDenit( CellularAutomaton * ptr )
 {
-    free( gridPtr->stateBuffer[ 0 ] );
-    free( gridPtr->stateBuffer[ 1 ] );
-    memset( gridPtr, 0x00, sizeof( *gridPtr ) );
+    CellularAutomatonDenit( ptr );
 }
 
 
 
-void briansBrainUpdate( Grid * gridPtr )
+void briansBrainUpdate( CellularAutomaton * ptr )
 {
-    CellState * temp = gridPtr->oldStates;
-    gridPtr->oldStates = gridPtr->newStates;
-    gridPtr->newStates = temp;
-
-    for ( int row = 0; row < gridPtr->rows; row++ )
+    for ( int row = 0; row < ptr->rows; row++ )
     {
-        for ( int col = 0; col < gridPtr->cols; col++ )
+        const int cellRowIdx = row * ptr->cols;
+
+        for ( int col = 0; col < ptr->cols; col++ )
         {
-            size_t cellIdx = row * gridPtr->cols + col;
+            const int cellIdx = cellRowIdx + col;
 
-            switch ( gridPtr->oldStates[ cellIdx ] )
+            switch ( ptr->oldStates[ cellIdx ] )
             {
-                case CellStateDead:
+                case BriansBrainStateDead:
                 {
-                    size_t liveNeighbourCount = 0;
+                    int liveNeighbourCount = 0;
 
-                    for ( int r = -1; r <= 1; r++ )
+                    for ( int rowOff = -1; rowOff <= 1; rowOff++ )
                     {
-                        for ( int c = -1; c <= 1; c++ )
+                        const int nRow = ( row + rowOff + ptr->rows ) % ptr->rows;
+
+                        for ( int colOff = -1; colOff <= 1; colOff++ )
                         {
-                            if ( r == 0 && c == 0 )
+                            if ( rowOff == 0 && colOff == 0 )
                             {
                                 continue;
                             }
 
-                            int neighbourRow = ( row + r + gridPtr->rows ) % gridPtr->rows;
-                            int neighbourCol = ( col + c + gridPtr->cols ) % gridPtr->cols;
-                            size_t neighbourIdx = neighbourRow * gridPtr->cols + neighbourCol;
+                            const int nCol = ( col + colOff + ptr->cols ) % ptr->cols;
 
-                            if ( gridPtr->oldStates[ neighbourIdx ] == CellStateLive )
+                            const int nIdx = nRow * ptr->cols + nCol;
+
+                            if ( ptr->oldStates[ nIdx ] == BriansBrainStateLive )
                             {
                                 liveNeighbourCount++;
                             }
                         }
                     }
-                    gridPtr->newStates[ cellIdx ] = ( liveNeighbourCount == 2 )
-                                                  ? CellStateLive
-                                                  : CellStateDead;
+                    ptr->newStates[ cellIdx ] = ( liveNeighbourCount == 2 )
+                        ? BriansBrainStateLive
+                        : BriansBrainStateDead;
                     break;
                 }
-                case CellStateDying:
+                case BriansBrainStateDying:
                 {
-                    gridPtr->newStates[ cellIdx ] = CellStateDead;
+                    ptr->newStates[ cellIdx ] = BriansBrainStateDead;
                     break;
                 }
-                case CellStateLive:
+                case BriansBrainStateLive:
                 {
-                    gridPtr->newStates[ cellIdx ] = CellStateDying;
+                    ptr->newStates[ cellIdx ] = BriansBrainStateDying;
                     break;
                 }
                 default:
                 {
-                    gridPtr->newStates[ cellIdx ] = CellStateDead;
+                    ptr->newStates[ cellIdx ] = BriansBrainStateDead;
                     break;
                 }
             }

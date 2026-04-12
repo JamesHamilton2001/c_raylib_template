@@ -6,6 +6,7 @@
 
 #include "raylib.h"
 
+#include "cellular_automaton.h"
 #include "brians_brain.h"
 
 
@@ -14,7 +15,7 @@ int screenWidth;
 int screenHeight;
 int targetFps;
 
-Grid grid;
+CellularAutomaton cellularAutomaton;
 
 
 
@@ -40,7 +41,7 @@ int main()
 
     denit( );
 
-    return 0;
+    exit( EXIT_SUCCESS );
 }
 
 
@@ -54,17 +55,37 @@ static void init( void )
     InitWindow( screenWidth, screenHeight, "c_raylib_template" );
     SetTargetFPS( targetFps );
 
-    srand( 42 );
+    Color * initialStateColours = NULL;
+    int32_t rows  = 128;
+    int32_t cols  = 128;
+    uint32_t id   = 0;
+    uint32_t seed = 0x42424242;
+    CellState * initialStates = NULL;
 
-    briansBrainInit( &grid, 128, 128, BLACK, RED, WHITE );
+    briansBrainInit(
+        &cellularAutomaton,
+        initialStateColours,
+        rows,
+        cols,
+        id,
+        seed,
+        initialStates
+    );
+
+    for ( int32_t r = 0; r < cellularAutomaton.rows; r++ )
+    {
+        for ( int32_t c = 0; c < cellularAutomaton.rows; c++ )
+        {
+            printf( "%u ", cellularAutomaton.newStates[ r * cellularAutomaton.cols + c ] );
+        }
+        printf( "\n" );
+    }
 }
 
 
 
 static void denit( void )
 {
-    briansBrainDenit( &grid );
-
     CloseWindow( );
 }
 
@@ -72,7 +93,7 @@ static void denit( void )
 
 static void update( void )
 {
-    briansBrainUpdate( &grid );
+    CellularAutomatonUpdate( &cellularAutomaton );
 }
 
 
@@ -83,22 +104,7 @@ static void draw( void )
 
     ClearBackground( BLACK );
 
-    int width = screenWidth / grid.cols;
-    int height = screenHeight / grid.rows;
-
-    for ( int row = 0; row < grid.rows; row++ )
-    {
-        int y = row * height;
-
-        for ( int col = 0; col < grid.cols; col++ )
-        {
-            int x = col * width;
-
-            CellState state = grid.newStates[ row * grid.cols + col ];
-
-            DrawRectangle( x, y, width, height, grid.stateColours[ state ] );
-        }
-    }
+    CellularAutomatonDraw( &cellularAutomaton );
 
     DrawFPS( 0, 0 );
 

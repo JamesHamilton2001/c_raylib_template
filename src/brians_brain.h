@@ -2,50 +2,42 @@
 #define BRIANS_BRAIN_H
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include "raylib.h"
 
-
-
-typedef enum _CellState {
-
-    CellStateDead,
-    CellStateDying,
-    CellStateLive,
-    CELL_STATE_COUNT
-
-} CellState;
+#include "cellular_automaton.h"
 
 
 
-typedef struct _Grid {
+#define BRIANS_BRAIN_STR "Brians Brain"
 
-    int rows;
-    int cols;
-    size_t count;
+typedef enum _BriansBrainState {
+    BriansBrainStateDead,
+    BriansBrainStateDying,
+    BriansBrainStateLive,
+    BRIANS_BRAIN_STATE_COUNT
+} BriansBrainState;
 
-    Color stateColours [ CELL_STATE_COUNT ];
-
-    CellState * newStates;
-    CellState * oldStates;
-
-    CellState * stateBuffer [ 2 ];
-
-} Grid;
+extern const Color briansBraindefaultInitColours [ BRIANS_BRAIN_STATE_COUNT ];
 
 
 
-void briansBrainInit( Grid * gridPtr,
-                      int rows,
-                      int cols,
-                      Color initDeadColour,
-                      Color initDyingColour,
-                      Color initLiveColour );
+void briansBrainInit(
+    CellularAutomaton * ptr,
+    const Color * initialStateColours,
+    int32_t rows,
+    int32_t cols,
+    uint32_t id,
+    uint32_t seed,
+    CellState * initialStates
+);
 
-void briansBrainDenit( Grid * gridPtr );
+void briansBrainDenit( CellularAutomaton * ptr );
 
-void briansBrainUpdate( Grid * gridPtr );
+void briansBrainUpdate( CellularAutomaton * ptr );
 
 
 
-#endif //#ifndef BRIANS_BRAIN_H
+
+#endif // #ifndef BRIANS_BRAIN_H
