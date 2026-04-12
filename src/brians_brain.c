@@ -18,55 +18,16 @@ const Color briansBraindefaultInitColours [ BRIANS_BRAIN_STATE_COUNT ] = {
 
 
 
-void briansBrainInit(
-    CellularAutomaton * ptr,
-    const Color * initialStateColours,
-    int32_t rows,
-    int32_t cols,
-    uint32_t id,
-    uint32_t seed,
-    CellState * initialStates
-) {
-    const char * name = BRIANS_BRAIN_STR;
+void briansBrainInitStateFunc( CellularAutomaton * ptr )
+{
+    srand( ptr->seed );
 
-    uint32_t stateCount = BRIANS_BRAIN_STATE_COUNT;
-
-    if ( initialStateColours == NULL )
-    {
-        initialStateColours = briansBraindefaultInitColours;
-    }
-
-    CellularAutomatonInit(
-        ptr,
-
-        name,
-        stateCount,
-        initialStateColours,
-        briansBrainUpdateState,
-        briansBrainUpdatePixelData,
-
-        rows,
-        cols,
-        id,
-        seed,
-        initialStates
-    );
-
-    srand( seed );
-
-    for ( int32_t i = 0; i < rows * cols; i++ )
+    for ( uint32_t i = 0; i < ptr->count; i++ )
     {
         CellState s = rand( ) % BRIANS_BRAIN_STATE_COUNT;
         ptr->newStates[ i ] = s;
         ptr->oldStates[ i ] = s;
     }
-}
-
-
-
-void briansBrainDenit( CellularAutomaton * ptr )
-{
-    CellularAutomatonDenit( ptr );
 }
 
 
@@ -108,9 +69,11 @@ void briansBrainUpdateState( CellularAutomaton * ptr )
                             }
                         }
                     }
+
                     ptr->newStates[ cellIdx ] = ( liveNeighbourCount == 2 )
                         ? BriansBrainStateLive
                         : BriansBrainStateDead;
+
                     break;
                 }
                 case BriansBrainStateDying:

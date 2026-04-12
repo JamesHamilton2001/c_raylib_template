@@ -8,15 +8,28 @@
 
 
 
-typedef uint32_t CellState;
+typedef enum _CellularAutomatonType {
+
+    CellularAutomatonTypeBriansBrain,
+
+    CELLULAR_AUTOMATON_TYPE_COUNT
+
+} CellularAutomatonType;
+
 
 typedef struct _CellularAutomaton CellularAutomaton;
+
+typedef uint32_t CellState;
+
 
 typedef struct _CellularAutomaton {
 
     char name [ 128 ];
+    CellularAutomatonType type;
+
     size_t stateCount;
     Color * initStateColours;
+    void ( *initStateFunc )( CellularAutomaton * );
     void ( *updateStateFunc )( CellularAutomaton * );
     void ( *updatePixelDataFunc )( CellularAutomaton * );
 
@@ -47,11 +60,9 @@ typedef struct _CellularAutomaton {
 void CellularAutomatonInit(
     CellularAutomaton * ptr,
 
+    CellularAutomatonType type,
     const char * name,
-    uint32_t stateCount,
     const Color * stateInitColours,
-    void ( *updateStateFunc )( CellularAutomaton * ),
-    void ( *updatePixelDataFunc )( CellularAutomaton * ),
 
     int32_t rows,
     int32_t cols,

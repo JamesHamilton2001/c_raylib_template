@@ -6,16 +6,16 @@
 
 #include "raylib.h"
 
+#include "brians_brain.h"
+
 
 
 void CellularAutomatonInit(
     CellularAutomaton * ptr,
 
+    CellularAutomatonType type,
     const char * name,
-    uint32_t stateCount,
     const Color * stateInitColours,
-    void ( *updateStateFunc )( CellularAutomaton * ),
-    void ( *updatePixelDataFunc )( CellularAutomaton * ),
 
     int32_t rows,
     int32_t cols,
@@ -23,8 +23,33 @@ void CellularAutomatonInit(
     uint32_t seed,
     CellState * initialStates
 ) {
-    strncpy(ptr->name, name, sizeof(ptr->name) - 1);
-    ptr->name[sizeof(ptr->name) - 1] = '\0';
+    uint32_t stateCount;
+    const Color * defaultStateInitColours;
+    void ( *initStateFunc )( CellularAutomaton * );
+    void ( *updateStateFunc )( CellularAutomaton * );
+    void ( *updatePixelDataFunc )( CellularAutomaton * );
+
+    switch ( type )
+    {
+        case CellularAutomatonTypeBriansBrain:
+        default:
+            stateCount = BRIANS_BRAIN_STATE_COUNT;
+            defaultStateInitColours = briansBraindefaultInitColours;
+            initStateFunc = briansBrainInitStateFunc;
+            updateStateFunc = briansBrainUpdateState;
+            updatePixelDataFunc = briansBrainUpdatePixelData;
+            break;
+    }
+
+    if ( stateInitColours == NULL )
+    {
+        stateInitColours = defaultStateInitColours;
+    }
+
+    ptr->type = type;
+
+    strncpy( ptr->name, name, sizeof( ptr->name ) - 1 );
+    ptr->name[ sizeof( ptr->name ) - 1 ] = '\0';
 
     ptr->stateCount = stateCount;
     ptr->initStateColours = malloc( stateCount * sizeof( Color ) );
@@ -42,6 +67,7 @@ void CellularAutomatonInit(
     ptr->newStates = ptr->stateBuffer[ 0 ];
     ptr->oldStates = ptr->stateBuffer[ 1 ];
 
+    ptr->initStateFunc = initStateFunc;
     ptr->updateStateFunc = updateStateFunc;
     ptr->updatePixelDataFunc = updatePixelDataFunc;
 
@@ -69,6 +95,8 @@ void CellularAutomatonInit(
         ptr->initialStates = malloc( ptr->count * sizeof( CellState ) );
         memcpy( ptr->initialStates, initialStates, ptr->count * sizeof( CellState ) );
     }
+
+    ptr->initStateFunc( ptr );
 }
 
 

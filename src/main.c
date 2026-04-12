@@ -61,6 +61,8 @@ static void init( void )
     InitWindow( screenWidth, screenHeight, "c_raylib_template" );
     SetTargetFPS( targetFps );
 
+    CellularAutomatonType type = CellularAutomatonTypeBriansBrain;
+    const char * name = BRIANS_BRAIN_STR;
     Color * initialStateColours = NULL;
     int32_t rows = 512;
     int32_t cols = 512;
@@ -68,8 +70,10 @@ static void init( void )
     uint32_t seed = 0x42424242;
     CellState * initialStates = NULL;
 
-    briansBrainInit(
+    CellularAutomatonInit(
         &cellularAutomaton,
+        type,
+        name,
         initialStateColours,
         rows,
         cols,
@@ -86,7 +90,7 @@ static void init( void )
 static void denit( void )
 {
     UnloadRenderTexture( targetRenderTexure );
-    briansBrainDenit( &cellularAutomaton );
+    CellularAutomatonDenit( &cellularAutomaton );
     CloseWindow( );
 }
 

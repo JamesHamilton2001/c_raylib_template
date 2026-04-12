@@ -13,10 +13,13 @@
 #define BRIANS_BRAIN_STR "Brians Brain"
 
 typedef enum _BriansBrainState {
+
     BriansBrainStateDead,
     BriansBrainStateDying,
     BriansBrainStateLive,
+
     BRIANS_BRAIN_STATE_COUNT
+
 } BriansBrainState;
 
 extern const Color briansBraindefaultInitColours [ BRIANS_BRAIN_STATE_COUNT ];
@@ -33,7 +36,7 @@ void briansBrainInit(
     CellState * initialStates
 );
 
-void briansBrainDenit( CellularAutomaton * ptr );
+void briansBrainInitStateFunc( CellularAutomaton * ptr );
 
 void briansBrainUpdateState( CellularAutomaton * ptr );
 
