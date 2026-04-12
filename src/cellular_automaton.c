@@ -33,14 +33,24 @@ void CellularAutomatonInit(
 
     ptr->rows = rows;
     ptr->cols = cols;
+    ptr->count = rows * cols;
 
-    ptr->stateBuffer[ 0 ] = calloc( rows * cols, sizeof( CellState ) );
-    ptr->stateBuffer[ 1 ] = calloc( rows * cols, sizeof( CellState ) );
+    ptr->stateBuffer[ 0 ] = calloc( ptr->count, sizeof( CellState ) );
+    ptr->stateBuffer[ 1 ] = calloc( ptr->count, sizeof( CellState ) );
 
     ptr->newStates = ptr->stateBuffer[ 0 ];
     ptr->oldStates = ptr->stateBuffer[ 1 ];
 
     ptr->updateFunc = updateFunc;
+
+    ptr->pixelData = calloc( ptr->count, sizeof( Color ) );
+    ptr->image.data = ptr->pixelData;
+    ptr->image.width = cols;
+    ptr->image.height = rows;
+    ptr->image.mipmaps = 1;
+    ptr->image.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
+
+    ptr->texture = LoadTextureFromImage( ptr->image );
 
     ptr->iterationCount = 0;
 
@@ -54,8 +64,8 @@ void CellularAutomatonInit(
     }
     else
     {
-        ptr->initialStates = malloc( rows * cols * sizeof( CellState ) );
-        memcpy( ptr->initialStates, initialStates, rows * cols * sizeof( CellState ) );
+        ptr->initialStates = malloc( ptr->count * sizeof( CellState ) );
+        memcpy( ptr->initialStates, initialStates, ptr->count * sizeof( CellState ) );
     }
 }
 
@@ -68,6 +78,8 @@ void CellularAutomatonDenit( CellularAutomaton * ptr )
     if ( ptr->stateBuffer[ 0 ] != NULL ) free( ptr->stateBuffer[ 0 ] );
     if ( ptr->stateBuffer[ 1 ] != NULL ) free( ptr->stateBuffer[ 1 ] );
     if ( ptr->initialStates != NULL ) free( ptr->initialStates );
+    if ( ptr->pixelData != NULL ) free( ptr->pixelData );
+    UnloadTexture( ptr->texture );
 
     memset( ptr, 0x00, sizeof( *ptr ) );
 }
@@ -77,8 +89,8 @@ void CellularAutomatonDenit( CellularAutomaton * ptr )
 void CellularAutomatonUpdate( CellularAutomaton * ptr )
 {
     CellState * temp = ptr->oldStates;
-    ptr->oldStates   = ptr->newStates;
-    ptr->newStates   = temp;
+    ptr->oldStates = ptr->newStates;
+    ptr->newStates = temp;
 
     ptr->updateFunc( ptr );
 
@@ -87,25 +99,41 @@ void CellularAutomatonUpdate( CellularAutomaton * ptr )
 
 
 
-extern int screenWidth;
-extern int screenHeight;
-
 void CellularAutomatonDraw( const CellularAutomaton * ptr )
 {
-    int width = screenWidth / ptr->cols;
-    int height = screenHeight / ptr->rows;
+    float screenWidth = (float)GetScreenWidth( );
+    float screenHeight = (float)GetScreenHeight( );
 
-    for ( int row = 0; row < ptr->rows; row++ )
+    float texWidth = (float)ptr->cols;
+    float texHeight = (float)ptr->rows;
+
+    float xScale = screenWidth / texWidth;
+    float yScale = screenHeight / texHeight;
+    float scale = ( xScale > yScale ) ? xScale : yScale;
+
+    float drawWidth = texWidth * scale;
+    float drawHeight = texHeight * scale;
+
+
+    Rectangle src = { 0.0f, 0.0f, texWidth, texHeight };
+
+    Rectangle dst = {
+        ( screenWidth - drawWidth ) * 0.5f,
+        ( screenHeight - drawHeight ) * 0.5f,
+        drawWidth,
+        drawHeight
+    };
+
+    Vector2 origin = { 0.0f, 0.0f };
+
+    float rotation = 0.0f;
+
+
+    for ( uint32_t i = 0; i < ptr->count; i++ )
     {
-        int y = row * height;
-
-        for ( int col = 0; col < ptr->cols; col++ )
-        {
-            int x = col * width;
-
-            CellState state = ptr->newStates[ row * ptr->cols + col ];
-
-            DrawRectangle( x, y, width, height, ptr->stateColours[ state ] );
-        }
+        ptr->pixelData[ i ] = ptr->stateColours[ ptr->newStates[ i ] ];
     }
+    UpdateTexture( ptr->texture, ptr->pixelData );
+
+    DrawTexturePro( ptr->texture, src, dst, origin, rotation, WHITE );
 }

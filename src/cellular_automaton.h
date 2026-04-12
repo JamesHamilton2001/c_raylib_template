@@ -21,11 +21,17 @@ typedef struct _CellularAutomaton {
 
     int32_t rows;
     int32_t cols;
+    uint32_t count;
 
     CellState * newStates;
     CellState * oldStates;
     CellState * stateBuffer [ 2 ];
+
     Color * stateColours;
+
+    Color * pixelData;
+    Image image;
+    Texture2D texture;
 
     uint64_t iterationCount;
 
@@ -38,8 +44,8 @@ typedef struct _CellularAutomaton {
 
 
 void CellularAutomatonInit(
-
     CellularAutomaton * ptr,
+
     const char * name,
     uint32_t stateCount,
     const Color * stateInitColours,
@@ -50,7 +56,6 @@ void CellularAutomatonInit(
     uint32_t id,
     uint32_t seed,
     CellState * initialStates
-
 );
 
 void CellularAutomatonDenit( CellularAutomaton * ptr );

@@ -56,9 +56,9 @@ static void init( void )
     SetTargetFPS( targetFps );
 
     Color * initialStateColours = NULL;
-    int32_t rows  = 128;
-    int32_t cols  = 128;
-    uint32_t id   = 0;
+    int32_t rows = 1024;
+    int32_t cols = 1024;
+    uint32_t id = 0;
     uint32_t seed = 0x42424242;
     CellState * initialStates = NULL;
 
@@ -71,15 +71,6 @@ static void init( void )
         seed,
         initialStates
     );
-
-    for ( int32_t r = 0; r < cellularAutomaton.rows; r++ )
-    {
-        for ( int32_t c = 0; c < cellularAutomaton.rows; c++ )
-        {
-            printf( "%u ", cellularAutomaton.newStates[ r * cellularAutomaton.cols + c ] );
-        }
-        printf( "\n" );
-    }
 }
 
 

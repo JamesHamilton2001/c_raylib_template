@@ -38,10 +38,12 @@ void briansBrainInit(
 
     CellularAutomatonInit(
         ptr,
+
         name,
         stateCount,
         initialStateColours,
         briansBrainUpdate,
+
         rows,
         cols,
         id,

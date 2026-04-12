@@ -22,7 +22,7 @@
         "path": [
           "${workspaceFolder}/src"
         ],
-        "limitSymbolsToIncludedHeaders": true
+        // "limitSymbolsToIncludedHeaders": true
       }
     }
   ]
