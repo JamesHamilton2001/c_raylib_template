@@ -10,52 +10,42 @@
 
 
 
+static const CellularAutomatonTypeParameters * getTypeParametersPtr( CellularAutomatonType type )
+{
+    switch ( type )
+    {
+        case CellularAutomatonTypeBriansBrain:
+            return &briansBrainTypeParameters;
+
+        default:
+            return NULL;
+    }
+}
+
+
+
 void CellularAutomatonInit(
     CellularAutomaton * ptr,
-
     CellularAutomatonType type,
-    const char * name,
-    const Color * stateInitColours,
-
     int32_t rows,
     int32_t cols,
+    const char * name,
     uint32_t id,
     uint32_t seed,
     CellState * initialStates
 ) {
-    uint32_t stateCount;
-    const Color * defaultStateInitColours;
-    void ( *initStateFunc )( CellularAutomaton * );
-    void ( *updateStateFunc )( CellularAutomaton * );
-    void ( *updatePixelDataFunc )( CellularAutomaton * );
-
-    switch ( type )
-    {
-        case CellularAutomatonTypeBriansBrain:
-        default:
-            stateCount = BRIANS_BRAIN_STATE_COUNT;
-            defaultStateInitColours = briansBraindefaultInitColours;
-            initStateFunc = briansBrainInitStateFunc;
-            updateStateFunc = briansBrainUpdateState;
-            updatePixelDataFunc = briansBrainUpdatePixelData;
-            break;
-    }
-
-    if ( stateInitColours == NULL )
-    {
-        stateInitColours = defaultStateInitColours;
-    }
+    const CellularAutomatonTypeParameters * typeParameters = getTypeParametersPtr( type );
 
     ptr->type = type;
 
     strncpy( ptr->name, name, sizeof( ptr->name ) - 1 );
     ptr->name[ sizeof( ptr->name ) - 1 ] = '\0';
 
-    ptr->stateCount = stateCount;
-    ptr->initStateColours = malloc( stateCount * sizeof( Color ) );
-    ptr->stateColours = malloc( stateCount * sizeof( Color ) );
-    memcpy( ptr->initStateColours, stateInitColours, stateCount * sizeof( Color ) );
-    memcpy( ptr->stateColours, stateInitColours, stateCount * sizeof( Color ) );
+    ptr->stateCount = typeParameters->stateCount;
+    ptr->initStateColours = malloc( ptr->stateCount * sizeof( Color ) );
+    ptr->stateColours = malloc( ptr->stateCount * sizeof( Color ) );
+    memcpy( ptr->initStateColours, typeParameters->initStateColours, ptr->stateCount * sizeof( Color ) );
+    memcpy( ptr->stateColours, typeParameters->initStateColours, ptr->stateCount * sizeof( Color ) );
 
     ptr->rows = rows;
     ptr->cols = cols;
@@ -67,9 +57,9 @@ void CellularAutomatonInit(
     ptr->newStates = ptr->stateBuffer[ 0 ];
     ptr->oldStates = ptr->stateBuffer[ 1 ];
 
-    ptr->initStateFunc = initStateFunc;
-    ptr->updateStateFunc = updateStateFunc;
-    ptr->updatePixelDataFunc = updatePixelDataFunc;
+    ptr->initStateFunc = typeParameters->initStateFunc;
+    ptr->updateStateFunc = typeParameters->updateStateFunc;
+    ptr->updatePixelDataFunc = typeParameters->updatePixelDataFunc;
 
     ptr->pixelData = calloc( ptr->count, sizeof( Color ) );
     ptr->image.data = ptr->pixelData;

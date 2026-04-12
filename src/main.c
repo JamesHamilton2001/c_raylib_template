@@ -63,24 +63,13 @@ static void init( void )
 
     CellularAutomatonType type = CellularAutomatonTypeBriansBrain;
     const char * name = BRIANS_BRAIN_STR;
-    Color * initialStateColours = NULL;
     int32_t rows = 512;
     int32_t cols = 512;
     uint32_t id = 0;
     uint32_t seed = 0x42424242;
     CellState * initialStates = NULL;
 
-    CellularAutomatonInit(
-        &cellularAutomaton,
-        type,
-        name,
-        initialStateColours,
-        rows,
-        cols,
-        id,
-        seed,
-        initialStates
-    );
+    CellularAutomatonInit( &cellularAutomaton, type, rows, cols, name, id, seed, initialStates );
 
     targetRenderTexure = LoadRenderTexture( screenWidth, screenHeight );
 }

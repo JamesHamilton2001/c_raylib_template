@@ -10,10 +10,20 @@
 
 
 
-const Color briansBraindefaultInitColours [ BRIANS_BRAIN_STATE_COUNT ] = {
+static const Color briansBraindefaultInitColours [ BRIANS_BRAIN_STATE_COUNT ] = {
     BLANK,
     RED,
     WHITE
+};
+
+
+
+const CellularAutomatonTypeParameters briansBrainTypeParameters = {
+    .stateCount = BRIANS_BRAIN_STATE_COUNT,
+    .initStateColours = briansBraindefaultInitColours,
+    .initStateFunc = briansBrainInitStateFunc,
+    .updateStateFunc = briansBrainUpdateState,
+    .updatePixelDataFunc = briansBrainUpdatePixelData
 };
 
 
