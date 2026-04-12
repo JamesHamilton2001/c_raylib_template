@@ -9,21 +9,22 @@
 
 
 void CellularAutomatonInit(
-
     CellularAutomaton * ptr,
+
     const char * name,
     uint32_t stateCount,
     const Color * stateInitColours,
-    void ( *updateFunc )( CellularAutomaton * ),
+    void ( *updateStateFunc )( CellularAutomaton * ),
+    void ( *updatePixelDataFunc )( CellularAutomaton * ),
 
     int32_t rows,
     int32_t cols,
     uint32_t id,
     uint32_t seed,
     CellState * initialStates
-
 ) {
-    strncpy( ptr->name, name, sizeof( ptr->name - 1 ) );
+    strncpy(ptr->name, name, sizeof(ptr->name) - 1);
+    ptr->name[sizeof(ptr->name) - 1] = '\0';
 
     ptr->stateCount = stateCount;
     ptr->initStateColours = malloc( stateCount * sizeof( Color ) );
@@ -41,7 +42,8 @@ void CellularAutomatonInit(
     ptr->newStates = ptr->stateBuffer[ 0 ];
     ptr->oldStates = ptr->stateBuffer[ 1 ];
 
-    ptr->updateFunc = updateFunc;
+    ptr->updateStateFunc = updateStateFunc;
+    ptr->updatePixelDataFunc = updatePixelDataFunc;
 
     ptr->pixelData = calloc( ptr->count, sizeof( Color ) );
     ptr->image.data = ptr->pixelData;
@@ -73,13 +75,14 @@ void CellularAutomatonInit(
 
 void CellularAutomatonDenit( CellularAutomaton * ptr )
 {
-    if ( ptr->initStateColours != NULL ) free( ptr->initStateColours );
-    if ( ptr->stateColours != NULL ) free( ptr->stateColours );
-    if ( ptr->stateBuffer[ 0 ] != NULL ) free( ptr->stateBuffer[ 0 ] );
-    if ( ptr->stateBuffer[ 1 ] != NULL ) free( ptr->stateBuffer[ 1 ] );
-    if ( ptr->initialStates != NULL ) free( ptr->initialStates );
-    if ( ptr->pixelData != NULL ) free( ptr->pixelData );
     UnloadTexture( ptr->texture );
+
+    free( ptr->initStateColours );
+    free( ptr->stateColours );
+    free( ptr->stateBuffer[ 0 ] );
+    free( ptr->stateBuffer[ 1 ] );
+    free( ptr->initialStates );
+    free( ptr->pixelData );
 
     memset( ptr, 0x00, sizeof( *ptr ) );
 }
@@ -92,7 +95,8 @@ void CellularAutomatonUpdate( CellularAutomaton * ptr )
     ptr->oldStates = ptr->newStates;
     ptr->newStates = temp;
 
-    ptr->updateFunc( ptr );
+    ptr->updateStateFunc( ptr );
+    ptr->updatePixelDataFunc( ptr );
 
     ptr->iterationCount++;
 }
@@ -109,7 +113,7 @@ void CellularAutomatonDraw( const CellularAutomaton * ptr )
 
     float xScale = screenWidth / texWidth;
     float yScale = screenHeight / texHeight;
-    float scale = ( xScale > yScale ) ? xScale : yScale;
+    float scale = ( xScale < yScale ) ? xScale : yScale;
 
     float drawWidth = texWidth * scale;
     float drawHeight = texHeight * scale;
@@ -128,11 +132,6 @@ void CellularAutomatonDraw( const CellularAutomaton * ptr )
 
     float rotation = 0.0f;
 
-
-    for ( uint32_t i = 0; i < ptr->count; i++ )
-    {
-        ptr->pixelData[ i ] = ptr->stateColours[ ptr->newStates[ i ] ];
-    }
     UpdateTexture( ptr->texture, ptr->pixelData );
 
     DrawTexturePro( ptr->texture, src, dst, origin, rotation, WHITE );

@@ -35,7 +35,9 @@ void briansBrainInit(
 
 void briansBrainDenit( CellularAutomaton * ptr );
 
-void briansBrainUpdate( CellularAutomaton * ptr );
+void briansBrainUpdateState( CellularAutomaton * ptr );
+
+void briansBrainUpdatePixelData( CellularAutomaton * ptr );
 
 
 

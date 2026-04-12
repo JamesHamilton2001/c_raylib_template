@@ -11,7 +11,7 @@
 
 
 const Color briansBraindefaultInitColours [ BRIANS_BRAIN_STATE_COUNT ] = {
-    BLACK,
+    BLANK,
     RED,
     WHITE
 };
@@ -42,7 +42,8 @@ void briansBrainInit(
         name,
         stateCount,
         initialStateColours,
-        briansBrainUpdate,
+        briansBrainUpdateState,
+        briansBrainUpdatePixelData,
 
         rows,
         cols,
@@ -55,7 +56,9 @@ void briansBrainInit(
 
     for ( int32_t i = 0; i < rows * cols; i++ )
     {
-        ptr->newStates[ i ] = rand( ) & ( BriansBrainStateDying | BriansBrainStateLive );
+        CellState s = rand( ) % BRIANS_BRAIN_STATE_COUNT;
+        ptr->newStates[ i ] = s;
+        ptr->oldStates[ i ] = s;
     }
 }
 
@@ -68,15 +71,15 @@ void briansBrainDenit( CellularAutomaton * ptr )
 
 
 
-void briansBrainUpdate( CellularAutomaton * ptr )
+void briansBrainUpdateState( CellularAutomaton * ptr )
 {
     for ( int row = 0; row < ptr->rows; row++ )
     {
-        const int cellRowIdx = row * ptr->cols;
+        int cellRowIdx = row * ptr->cols;
 
         for ( int col = 0; col < ptr->cols; col++ )
         {
-            const int cellIdx = cellRowIdx + col;
+            int cellIdx = cellRowIdx + col;
 
             switch ( ptr->oldStates[ cellIdx ] )
             {
@@ -86,7 +89,7 @@ void briansBrainUpdate( CellularAutomaton * ptr )
 
                     for ( int rowOff = -1; rowOff <= 1; rowOff++ )
                     {
-                        const int nRow = ( row + rowOff + ptr->rows ) % ptr->rows;
+                        int nRow = ( row + rowOff + ptr->rows ) % ptr->rows;
 
                         for ( int colOff = -1; colOff <= 1; colOff++ )
                         {
@@ -95,9 +98,9 @@ void briansBrainUpdate( CellularAutomaton * ptr )
                                 continue;
                             }
 
-                            const int nCol = ( col + colOff + ptr->cols ) % ptr->cols;
+                            int nCol = ( col + colOff + ptr->cols ) % ptr->cols;
 
-                            const int nIdx = nRow * ptr->cols + nCol;
+                            int nIdx = nRow * ptr->cols + nCol;
 
                             if ( ptr->oldStates[ nIdx ] == BriansBrainStateLive )
                             {
@@ -127,5 +130,15 @@ void briansBrainUpdate( CellularAutomaton * ptr )
                 }
             }
         }
+    }
+}
+
+
+
+void briansBrainUpdatePixelData( CellularAutomaton * ptr )
+{
+    for ( uint32_t i = 0; i < ptr->count; i++ )
+    {
+        ptr->pixelData[ i ] = ptr->stateColours[ ptr->newStates[ i ] ];
     }
 }
