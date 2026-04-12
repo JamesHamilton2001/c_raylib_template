@@ -1,63 +1,106 @@
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "raylib.h"
 
-
-
-static void UpdateDrawFrame( void );
+#include "brians_brain.h"
 
 
 
-Camera camera = { 0 };
+int screenWidth;
+int screenHeight;
+int targetFps;
 
-Vector3 cubePosition = { 0 };
+Grid grid;
+
+
+
+static void init( void );
+
+static void denit( void );
+
+static void update( void );
+
+static void draw( void );
 
 
 
 int main()
 {
-    const int screenWidth = 800;
-    const int screenHeight = 450;
-
-    InitWindow( screenWidth, screenHeight, "c_raylib_template" );
-
-    camera.position = (Vector3){ 10.0f, 10.0f, 8.0f };
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 60.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
-
-    SetTargetFPS( 60 );
+    init( );
 
     while ( !WindowShouldClose( ) )
     {
-        UpdateDrawFrame( );
+        update( );
+        draw( );
     }
 
-    CloseWindow( );
+    denit( );
 
     return 0;
 }
 
 
 
-static void UpdateDrawFrame( void )
+static void init( void )
 {
-    UpdateCamera( &camera, CAMERA_ORBITAL );
+    screenWidth = 1024;
+    screenHeight = 1024;
+    targetFps = 240;
 
+    InitWindow( screenWidth, screenHeight, "c_raylib_template" );
+    SetTargetFPS( targetFps );
+
+    srand( 42 );
+
+    briansBrainInit( &grid, 128, 128, BLACK, RED, WHITE );
+}
+
+
+
+static void denit( void )
+{
+    briansBrainDenit( &grid );
+
+    CloseWindow( );
+}
+
+
+
+static void update( void )
+{
+    briansBrainUpdate( &grid );
+}
+
+
+
+static void draw( void )
+{
     BeginDrawing( );
 
-        ClearBackground( RAYWHITE );
+    ClearBackground( BLACK );
 
-        BeginMode3D( camera );
+    int width = screenWidth / grid.cols;
+    int height = screenHeight / grid.rows;
 
-            DrawCube( cubePosition, 2.0f, 2.0f, 2.0f, RED );
-            DrawCubeWires( cubePosition, 2.0f, 2.0f, 2.0f, MAROON );
-            DrawGrid( 10, 1.0f );
+    for ( int row = 0; row < grid.rows; row++ )
+    {
+        int y = row * height;
 
-        EndMode3D( );
+        for ( int col = 0; col < grid.cols; col++ )
+        {
+            int x = col * width;
 
-        DrawText( "This is a raylib example", 10, 40, 20, DARKGRAY );
+            CellState state = grid.newStates[ row * grid.cols + col ];
 
-        DrawFPS( 10, 10 );
+            DrawRectangle( x, y, width, height, grid.stateColours[ state ] );
+        }
+    }
+
+    DrawFPS( 0, 0 );
 
     EndDrawing( );
 }
