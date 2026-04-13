@@ -52,11 +52,19 @@ int main()
 
 static void init( void )
 {
-    screenWidth = 1024;
-    screenHeight = 1024;
+    // screenWidth = 1600;
+    // screenHeight = 900;
+    // targetFps = 240;
+
+    // screenWidth = 2650;
+    // screenHeight = 1440;
+    // targetFps = 240;
+
+    screenWidth = 512;
+    screenHeight = 512;
     targetFps = 240;
 
-    fade = 0.1f;
+    fade = 0.05f;
 
     InitWindow( screenWidth, screenHeight, "c_raylib_template" );
     SetTargetFPS( targetFps );
@@ -64,8 +72,8 @@ static void init( void )
     // CellularAutomatonType type = CellularAutomatonTypeBriansBrain;
     CellularAutomatonType type = CellularAutomatonTypeGameOfLife;
     const char * name = "cellular automaton development";
-    int32_t rows = 512;
-    int32_t cols = 512;
+    int32_t rows = screenHeight;
+    int32_t cols = screenWidth;
     uint32_t id = 0;
     uint32_t seed = 0x42424242;
     CellState * initialStates = NULL;

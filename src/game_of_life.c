@@ -43,50 +43,45 @@ void gameOfLifeInitStateFunc( CellularAutomaton * ptr )
 
 void gameOfLifeUpdateState( CellularAutomaton * ptr )
 {
-    for ( int row = 0; row < ptr->rows; row++ )
-    {
-        int cellRowIdx = row * ptr->cols;
+    const int rowCount = ptr->rows;
+    const int colCount = ptr->cols;
 
-        for ( int col = 0; col < ptr->cols; col++ )
+    const CellState * oldStates = ptr->oldStates;
+
+    CellState * newStates = ptr->newStates;
+
+    for ( int row = 0; row < rowCount; row++ )
+    {
+        const int rowUp    = ( row == 0 ) ? ( rowCount - 1 ) : ( row - 1 );
+        const int rowDown  = ( row == rowCount - 1 ) ? ( 0 ) : ( row + 1 );
+
+        const CellState * rowUpPtr   = oldStates + rowUp * colCount;
+        const CellState * rowPtr     = oldStates + row * colCount;
+        const CellState * rowDownPtr = oldStates + rowDown * colCount;
+
+        CellState *newRowPtr = newStates + row * colCount;
+
+        for ( int col = 0; col < colCount; col++ )
         {
-            int cellIdx = cellRowIdx + col;
+            const int colLeft  = ( col == 0 ) ? ( colCount - 1 ) : ( col - 1 );
+            const int colRight = ( col == colCount - 1 ) ? ( 0 ) : ( col + 1 );
 
             int liveNeighbourCount = 0;
 
-            for ( int rowOff = -1; rowOff <= 1; rowOff++ )
-            {
-                int nRow = ( row + rowOff + ptr->rows ) % ptr->rows;
+            liveNeighbourCount += ( rowUpPtr   [ colLeft  ] );
+            liveNeighbourCount += ( rowUpPtr   [ col      ] );
+            liveNeighbourCount += ( rowUpPtr   [ colRight ] );
+            liveNeighbourCount += ( rowPtr     [ colLeft  ] );
+            liveNeighbourCount += ( rowPtr     [ colRight ] );
+            liveNeighbourCount += ( rowDownPtr [ colLeft  ] );
+            liveNeighbourCount += ( rowDownPtr [ col      ] );
+            liveNeighbourCount += ( rowDownPtr [ colRight ] );
 
-                for ( int colOff = -1; colOff <= 1; colOff++ )
-                {
-                    if ( rowOff == 0 && colOff == 0 )
-                    {
-                        continue;
-                    }
+            const int selfIsLive = ( rowPtr[ col ] == GameOfLifeStateLive );
 
-                    int nCol = ( col + colOff + ptr->cols ) % ptr->cols;
-
-                    int nIdx = nRow * ptr->cols + nCol;
-
-                    if ( ptr->oldStates[ nIdx ] == GameOfLifeStateLive )
-                    {
-                        liveNeighbourCount++;
-                    }
-                }
-            }
-
-            if ( ptr->oldStates[ cellIdx ] == GameOfLifeStateLive )
-            {
-                ptr->newStates[ cellIdx ] = ( liveNeighbourCount == 3 || liveNeighbourCount == 2 )
-                    ? GameOfLifeStateLive
-                    : GameOfLifeStateDead;
-            }
-            else
-            {
-                ptr->newStates[ cellIdx ] = ( liveNeighbourCount == 3 )
-                    ? GameOfLifeStateLive
-                    : GameOfLifeStateDead;
-            }
+            newRowPtr[col] = ( liveNeighbourCount == 3 || ( selfIsLive && liveNeighbourCount == 2 ) )
+                ? GameOfLifeStateLive
+                : GameOfLifeStateDead;
         }
     }
 }
