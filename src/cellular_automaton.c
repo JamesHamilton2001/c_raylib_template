@@ -6,6 +6,7 @@
 
 #include "raylib.h"
 
+#include "game_of_life.h"
 #include "brians_brain.h"
 
 
@@ -14,11 +15,14 @@ static const CellularAutomatonTypeParameters * getTypeParametersPtr( CellularAut
 {
     switch ( type )
     {
+        case CellularAutomatonTypeGameOfLife:
+            return &gameOfLifeTypeParameters;
+
         case CellularAutomatonTypeBriansBrain:
             return &briansBrainTypeParameters;
 
         default:
-            return NULL;
+            return &gameOfLifeTypeParameters;
     }
 }
 

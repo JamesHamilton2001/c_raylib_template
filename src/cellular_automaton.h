@@ -16,6 +16,7 @@ typedef uint32_t CellState;
 
 typedef enum _CellularAutomatonType {
 
+    CellularAutomatonTypeGameOfLife,
     CellularAutomatonTypeBriansBrain,
 
     CELLULAR_AUTOMATON_TYPE_COUNT

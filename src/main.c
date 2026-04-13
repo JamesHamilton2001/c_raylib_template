@@ -61,8 +61,9 @@ static void init( void )
     InitWindow( screenWidth, screenHeight, "c_raylib_template" );
     SetTargetFPS( targetFps );
 
-    CellularAutomatonType type = CellularAutomatonTypeBriansBrain;
-    const char * name = BRIANS_BRAIN_STR;
+    // CellularAutomatonType type = CellularAutomatonTypeBriansBrain;
+    CellularAutomatonType type = CellularAutomatonTypeGameOfLife;
+    const char * name = "cellular automaton development";
     int32_t rows = 512;
     int32_t cols = 512;
     uint32_t id = 0;
