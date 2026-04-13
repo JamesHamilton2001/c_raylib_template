@@ -11,18 +11,19 @@
 
 
 
-static const CellularAutomatonTypeParameters * getTypeParametersPtr( CellularAutomatonType type )
+// static const CellularAutomatonTypeParameters * getTypeParametersPtr( CellularAutomatonType type )
+static CellularAutomatonTypeParameters getTypeParameters( CellularAutomatonType type )
 {
     switch ( type )
     {
         case CellularAutomatonTypeGameOfLife:
-            return &gameOfLifeTypeParameters;
+            return gameOfLifeTypeParameters;
 
         case CellularAutomatonTypeBriansBrain:
-            return &briansBrainTypeParameters;
+            return briansBrainTypeParameters;
 
         default:
-            return &gameOfLifeTypeParameters;
+            return gameOfLifeTypeParameters;
     }
 }
 
@@ -38,18 +39,15 @@ void CellularAutomatonInit(
     uint32_t seed,
     CellState * initialStates
 ) {
-    const CellularAutomatonTypeParameters * typeParameters = getTypeParametersPtr( type );
+    ptr->typeParams = getTypeParameters( type );
 
     ptr->type = type;
 
     strncpy( ptr->name, name, sizeof( ptr->name ) - 1 );
     ptr->name[ sizeof( ptr->name ) - 1 ] = '\0';
 
-    ptr->stateCount = typeParameters->stateCount;
-    ptr->initStateColours = malloc( ptr->stateCount * sizeof( Color ) );
-    ptr->stateColours = malloc( ptr->stateCount * sizeof( Color ) );
-    memcpy( ptr->initStateColours, typeParameters->initStateColours, ptr->stateCount * sizeof( Color ) );
-    memcpy( ptr->stateColours, typeParameters->initStateColours, ptr->stateCount * sizeof( Color ) );
+    ptr->stateColours = malloc( ptr->typeParams.stateCount * sizeof( Color ) );
+    memcpy( ptr->stateColours, ptr->typeParams.initStateColours, ptr->typeParams.stateCount * sizeof( Color ) );
 
     ptr->rows = rows;
     ptr->cols = cols;
@@ -60,10 +58,6 @@ void CellularAutomatonInit(
 
     ptr->newStates = ptr->stateBuffer[ 0 ];
     ptr->oldStates = ptr->stateBuffer[ 1 ];
-
-    ptr->initStateFunc = typeParameters->initStateFunc;
-    ptr->updateStateFunc = typeParameters->updateStateFunc;
-    ptr->updatePixelDataFunc = typeParameters->updatePixelDataFunc;
 
     ptr->pixelData = calloc( ptr->count, sizeof( Color ) );
     ptr->image.data = ptr->pixelData;
@@ -90,7 +84,7 @@ void CellularAutomatonInit(
         memcpy( ptr->initialStates, initialStates, ptr->count * sizeof( CellState ) );
     }
 
-    ptr->initStateFunc( ptr );
+    ptr->typeParams.initStateFunc( ptr );
 }
 
 
@@ -99,7 +93,6 @@ void CellularAutomatonDenit( CellularAutomaton * ptr )
 {
     UnloadTexture( ptr->texture );
 
-    free( ptr->initStateColours );
     free( ptr->stateColours );
     free( ptr->stateBuffer[ 0 ] );
     free( ptr->stateBuffer[ 1 ] );
@@ -117,8 +110,8 @@ void CellularAutomatonUpdate( CellularAutomaton * ptr )
     ptr->oldStates = ptr->newStates;
     ptr->newStates = temp;
 
-    ptr->updateStateFunc( ptr );
-    ptr->updatePixelDataFunc( ptr );
+    ptr->typeParams.updateStateFunc( ptr );
+    ptr->typeParams.updatePixelDataFunc( ptr );
 
     ptr->iterationCount++;
 }

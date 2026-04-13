@@ -41,12 +41,7 @@ typedef struct _CellularAutomaton {
 
     char name [ 128 ];
     CellularAutomatonType type;
-
-    uint32_t stateCount;
-    Color * initStateColours;
-    void ( *initStateFunc )( CellularAutomaton * );
-    void ( *updateStateFunc )( CellularAutomaton * );
-    void ( *updatePixelDataFunc )( CellularAutomaton * );
+    CellularAutomatonTypeParameters typeParams;
 
     int32_t rows;
     int32_t cols;
