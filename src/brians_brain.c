@@ -42,69 +42,6 @@ void briansBrainInitStateFunc( CellularAutomaton * ptr )
 
 
 
-// void briansBrainUpdateState( CellularAutomaton * ptr )
-// {
-//     for ( int row = 0; row < ptr->rows; row++ )
-//     {
-//         int cellRowIdx = row * ptr->cols;
-//
-//         for ( int col = 0; col < ptr->cols; col++ )
-//         {
-//             int cellIdx = cellRowIdx + col;
-//
-//             switch ( ptr->oldStates[ cellIdx ] )
-//             {
-//                 case BriansBrainStateDead:
-//                 {
-//                     int liveNeighbourCount = 0;
-//
-//                     for ( int rowOff = -1; rowOff <= 1; rowOff++ )
-//                     {
-//                         int nRow = ( row + rowOff + ptr->rows ) % ptr->rows;
-//
-//                         for ( int colOff = -1; colOff <= 1; colOff++ )
-//                         {
-//                             if ( rowOff == 0 && colOff == 0 )
-//                             {
-//                                 continue;
-//                             }
-//
-//                             int nCol = ( col + colOff + ptr->cols ) % ptr->cols;
-//
-//                             int nIdx = nRow * ptr->cols + nCol;
-//
-//                             if ( ptr->oldStates[ nIdx ] == BriansBrainStateLive )
-//                             {
-//                                 liveNeighbourCount++;
-//                             }
-//                         }
-//                     }
-//
-//                     ptr->newStates[ cellIdx ] = ( liveNeighbourCount == 2 )
-//                         ? BriansBrainStateLive
-//                         : BriansBrainStateDead;
-//
-//                     break;
-//                 }
-//                 case BriansBrainStateDying:
-//                 {
-//                     ptr->newStates[ cellIdx ] = BriansBrainStateDead;
-//                     break;
-//                 }
-//                 case BriansBrainStateLive:
-//                 {
-//                     ptr->newStates[ cellIdx ] = BriansBrainStateDying;
-//                     break;
-//                 }
-//                 default:
-//                 {
-//                     ptr->newStates[ cellIdx ] = BriansBrainStateDead;
-//                     break;
-//                 }
-//             }
-//         }
-//     }
-// }
 void briansBrainUpdateState( CellularAutomaton * ptr )
 {
     const int rowCount = ptr->rows;

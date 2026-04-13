@@ -27,7 +27,7 @@ typedef enum _CellularAutomatonType {
 
 typedef struct _CellularAutomatonTypeParameters {
 
-    size_t stateCount;
+    uint32_t stateCount;
     const Color * initStateColours;
     void ( *initStateFunc )( CellularAutomaton * );
     void ( *updateStateFunc )( CellularAutomaton * );
@@ -42,7 +42,7 @@ typedef struct _CellularAutomaton {
     char name [ 128 ];
     CellularAutomatonType type;
 
-    size_t stateCount;
+    uint32_t stateCount;
     Color * initStateColours;
     void ( *initStateFunc )( CellularAutomaton * );
     void ( *updateStateFunc )( CellularAutomaton * );
