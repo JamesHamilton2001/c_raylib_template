@@ -13,14 +13,13 @@
 
 
 
-
 int screenWidth;
 int screenHeight;
 int targetFps;
 
 float fade;
 
-CellAuto cellularAutomaton;
+CellAutom cellAutom;
 
 RenderTexture2D targetRenderTexure;
 
@@ -89,10 +88,10 @@ static void init( void )
     LangtonsAntParams lap  = { .antCount=1024, .antInitPositions=NULL, .antRows=NULL, .antCols=NULL };
 
 
-    // CellularAutomatonInit( &cellularAutomaton, CellularAutomatonType_briansBrain, NULL, rows, cols, name, id, seed, NULL );
-    // CellularAutomatonInit( &cellularAutomaton, CellularAutomatonType_gameOfLife,  NULL, rows, cols, name, id, seed, NULL );
-    CellularAutomatonInit( &cellularAutomaton, CellularAutomatonType_langtonsAnt, &lap, rows, cols, name, id, seed, NULL );
-    // CellularAutomatonInit( &cellularAutomaton, CELLULAR_AUTOMATON_TYPE_COUNT,    NULL, rows, cols, name, id, seed, NULL );
+    // CellAutomInit( &cellAutom, CellularAutomatonType_briansBrain, NULL, rows, cols, name, id, seed, NULL );
+    // CellAutomInit( &cellAutom, CellularAutomatonType_gameOfLife,  NULL, rows, cols, name, id, seed, NULL );
+    CellAutomInit( &cellAutom, CellularAutomatonType_langtonsAnt, &lap, rows, cols, name, id, seed, NULL );
+    // CellAutomInit( &cellAutom, CELLULAR_AUTOMATON_TYPE_COUNT,    NULL, rows, cols, name, id, seed, NULL );
 }
 
 
@@ -100,7 +99,7 @@ static void init( void )
 static void denit( void )
 {
     UnloadRenderTexture( targetRenderTexure );
-    CellularAutomatonDenit( &cellularAutomaton );
+    CellAutomDeinit( &cellAutom );
     CloseWindow( );
 }
 
@@ -108,7 +107,7 @@ static void denit( void )
 
 static void update( void )
 {
-    CellularAutomatonUpdate( &cellularAutomaton );
+    CellAutomUpdate( &cellAutom );
 }
 
 
@@ -120,7 +119,7 @@ static void draw( void )
     DrawRectangle( 0, 0, targetRenderTexure.texture.width, targetRenderTexure.texture.height, Fade( BLACK, fade ) );
     // ClearBackground( BLACK );
 
-    CellularAutomatonDraw( &cellularAutomaton );
+    CellAutomDraw( &cellAutom );
 
     EndTextureMode( );
 

@@ -8,18 +8,19 @@
 
 
 
-typedef struct _CellAuto CellAuto;
+typedef enum _CellAutomType CellAutomType;
+
+typedef struct _CellAutom CellAutom;
 
 typedef uint32_t CellState;
 
+typedef struct _CellAutomTypeStaticMems CellAutomTypeStaticMems;
 
-typedef void CellAutoTypeDynamicMems;
-
-typedef void CellAutoTypeParams;
-
+typedef void CellAutomTypeDynamicMems;
 
 
-typedef enum _CellAutoType {
+
+typedef enum _CellAutomType {
 
     CellularAutomatonType_gameOfLife,
     CellularAutomatonType_briansBrain,
@@ -27,29 +28,29 @@ typedef enum _CellAutoType {
 
     CELLULAR_AUTOMATON_TYPE_COUNT
 
-} CellAutoType;
+} CellAutomType;
 
 
 
-typedef struct _CellAutoTypeStaticMems {
+typedef struct _CellAutomTypeStaticMems {
 
     uint32_t stateCount;
     const Color * stateColours;
-    void ( *initStateFunc )( CellAuto *, const CellAutoTypeParams * );
-    void ( *updateStateFunc )( CellAuto * );
-    void ( *updatePixelDataFunc )( CellAuto * );
+    void ( *initStateFunc )( CellAutom *, const CellAutomTypeDynamicMems * );
+    void ( *updateStateFunc )( CellAutom * );
+    void ( *updatePixelDataFunc )( CellAutom * );
 
-} CellAutoTypeStaticMems;
-
-
+} CellAutomTypeStaticMems;
 
 
-typedef struct _CellAuto {
+
+
+typedef struct _CellAutom {
 
     char name [ 128 ];
-    CellAutoType type;
-    CellAutoTypeStaticMems staticMems;
-    CellAutoTypeParams * dynamicMemsPtr;
+    CellAutomType type;
+    CellAutomTypeStaticMems staticMems;
+    CellAutomTypeDynamicMems * dynamicMemsPtr;
 
     int32_t rows;
     int32_t cols;
@@ -69,14 +70,14 @@ typedef struct _CellAuto {
     int32_t seed;
     CellState * initialStates;
 
-} CellAuto;
+} CellAutom;
 
 
 
-void CellularAutomatonInit(
-    CellAuto * ptr,
-    CellAutoType type,
-    CellAutoTypeParams * dynamicArgsPtr,
+void CellAutomInit(
+    CellAutom * ptr,
+    CellAutomType type,
+    CellAutomTypeDynamicMems * dynamicArgsPtr,
     int32_t rows,
     int32_t cols,
     const char * name,
@@ -85,11 +86,11 @@ void CellularAutomatonInit(
     CellState * initialStates
 );
 
-void CellularAutomatonDenit( CellAuto * ptr );
+void CellAutomDeinit( CellAutom * ptr );
 
-void CellularAutomatonUpdate( CellAuto * ptr );
+void CellAutomUpdate( CellAutom * ptr );
 
-void CellularAutomatonDraw( const CellAuto * ptr );
+void CellAutomDraw( const CellAutom * ptr );
 
 
 

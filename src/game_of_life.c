@@ -17,7 +17,7 @@ static const Color gameOfLifeDefaultInitColours [ GAME_OF_LIFE_STATE_COUNT ] = {
 
 
 
-const CellAutoTypeStaticMems gameOfLifeStaticMems = {
+const CellAutomTypeStaticMems gameOfLifeStaticMems = {
     .stateCount = GAME_OF_LIFE_STATE_COUNT,
     .stateColours = gameOfLifeDefaultInitColours,
     .initStateFunc = gameOfLifeInitStateFunc,
@@ -27,7 +27,7 @@ const CellAutoTypeStaticMems gameOfLifeStaticMems = {
 
 
 
-void gameOfLifeInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * __attribute__((unused)) )
+void gameOfLifeInitStateFunc( CellAutom * ptr, const CellAutomTypeDynamicMems * __attribute__((unused)) )
 {
     for ( uint32_t i = 0; i < ptr->count; i++ )
     {
@@ -39,7 +39,7 @@ void gameOfLifeInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * __attri
 
 
 
-void gameOfLifeUpdateState( CellAuto * ptr )
+void gameOfLifeUpdateState( CellAutom * ptr )
 {
     const int rowCount = ptr->rows;
     const int colCount = ptr->cols;
@@ -86,7 +86,7 @@ void gameOfLifeUpdateState( CellAuto * ptr )
 
 
 
-void gameOfLifeUpdatePixelData( CellAuto * ptr )
+void gameOfLifeUpdatePixelData( CellAutom * ptr )
 {
     const Color * const stateColours = ptr->staticMems.stateColours;
     const CellState * states = ptr->newStates;

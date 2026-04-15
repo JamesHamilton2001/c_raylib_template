@@ -18,7 +18,7 @@ static const Color langtonsAntDefaultInitColours [ LANGTONS_ANT_STATE_COUNT ] = 
 
 
 
-const CellAutoTypeStaticMems langtonsAntTypeParameters = {
+const CellAutomTypeStaticMems langtonsAntTypeParameters = {
     .stateCount = LANGTONS_ANT_STATE_COUNT,
     .stateColours = langtonsAntDefaultInitColours,
     .initStateFunc = langtonsAntInitStateFunc,
@@ -28,7 +28,7 @@ const CellAutoTypeStaticMems langtonsAntTypeParameters = {
 
 
 
-void langtonsAntInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * argsPtr )
+void langtonsAntInitStateFunc( CellAutom * ptr, const CellAutomTypeDynamicMems * argsPtr )
 {
     const LangtonsAntParams * src = argsPtr;
 
@@ -87,7 +87,7 @@ void langtonsAntInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * argsPt
 
 
 
-void langtonsAntUpdateState( CellAuto * ptr )
+void langtonsAntUpdateState( CellAutom * ptr )
 {
     const uint32_t count = ptr->count;
     const int32_t rowCount = ptr->rows;
@@ -165,7 +165,7 @@ void langtonsAntUpdateState( CellAuto * ptr )
 
 
 
-void langtonsAntUpdatePixelData( CellAuto * ptr )
+void langtonsAntUpdatePixelData( CellAutom * ptr )
 {
     Color * pixelData = ptr->pixelData;
 
@@ -197,7 +197,7 @@ void langtonsAntUpdatePixelData( CellAuto * ptr )
 
 
 
-void LangtonsAntParamsDestroy( CellAutoTypeParams * vPtr )
+void LangtonsAntParamsDestroy( CellAutomTypeDynamicMems * vPtr )
 {
     LangtonsAntParams * ptr = (LangtonsAntParams *)vPtr;
 

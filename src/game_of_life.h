@@ -24,15 +24,15 @@ typedef enum _GameOfLifeState {
 
 
 
-extern const CellAutoTypeStaticMems gameOfLifeStaticMems;
+extern const CellAutomTypeStaticMems gameOfLifeStaticMems;
 
 
 
-void gameOfLifeInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * __attribute__((unused)) );
+void gameOfLifeInitStateFunc( CellAutom * ptr, const CellAutomTypeDynamicMems * __attribute__((unused)) );
 
-void gameOfLifeUpdateState( CellAuto * ptr );
+void gameOfLifeUpdateState( CellAutom * ptr );
 
-void gameOfLifeUpdatePixelData( CellAuto * ptr );
+void gameOfLifeUpdatePixelData( CellAutom * ptr );
 
 
 

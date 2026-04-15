@@ -38,17 +38,17 @@ typedef struct _LangtonsAntParams {
 
 
 
-extern const CellAutoTypeStaticMems langtonsAntTypeParameters;
+extern const CellAutomTypeStaticMems langtonsAntTypeParameters;
 
 
 
-void langtonsAntInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * argsPtr );
+void langtonsAntInitStateFunc( CellAutom * ptr, const CellAutomTypeDynamicMems * argsPtr );
 
-void langtonsAntUpdateState( CellAuto * ptr );
+void langtonsAntUpdateState( CellAutom * ptr );
 
-void langtonsAntUpdatePixelData( CellAuto * ptr );
+void langtonsAntUpdatePixelData( CellAutom * ptr );
 
-void LangtonsAntParamsDestroy( CellAutoTypeParams * vPtr );
+void LangtonsAntParamsDestroy( CellAutomTypeDynamicMems * vPtr );
 
 
 

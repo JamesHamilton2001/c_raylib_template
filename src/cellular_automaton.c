@@ -12,16 +12,16 @@
 
 
 
-static CellAutoTypeStaticMems getTypeParameters( CellAutoType type );
+static CellAutomTypeStaticMems getTypeParameters( CellAutomType type );
 
-static void ( *getTypeDynamicMemDestroyer( CellAutoType type ) )( CellAutoTypeDynamicMems * );
+static void ( *getTypeDynamicMemDestroyer( CellAutomType type ) )( CellAutomTypeDynamicMems * );
 
 
 
-void CellularAutomatonInit(
-    CellAuto * ptr,
-    CellAutoType type,
-    CellAutoTypeParams * dynamicArgsPtr,
+void CellAutomInit(
+    CellAutom * ptr,
+    CellAutomType type,
+    CellAutomTypeDynamicMems * dynamicArgsPtr,
     int32_t rows,
     int32_t cols,
     const char * name,
@@ -80,7 +80,7 @@ void CellularAutomatonInit(
 
 
 
-void CellularAutomatonDenit( CellAuto * ptr )
+void CellAutomDeinit( CellAutom * ptr )
 {
     getTypeDynamicMemDestroyer( ptr->type )( ptr->dynamicMemsPtr );
     free( ptr->dynamicMemsPtr );
@@ -97,7 +97,7 @@ void CellularAutomatonDenit( CellAuto * ptr )
 
 
 
-void CellularAutomatonUpdate( CellAuto * ptr )
+void CellAutomUpdate( CellAutom * ptr )
 {
     CellState * temp = ptr->oldStates;
     ptr->oldStates = ptr->newStates;
@@ -111,7 +111,7 @@ void CellularAutomatonUpdate( CellAuto * ptr )
 
 
 
-void CellularAutomatonDraw( const CellAuto * ptr )
+void CellAutomDraw( const CellAutom * ptr )
 {
     float screenWidth = (float)GetScreenWidth( );
     float screenHeight = (float)GetScreenHeight( );
@@ -161,7 +161,7 @@ static const uint32_t errorTypeStateCount = 2;
 
 static const Color errorTypeStateColours [ 2 ] = { BLACK, MAGENTA };
 
-static void errorTypeInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * __attribute__((unused)) )
+static void errorTypeInitStateFunc( CellAutom * ptr, const CellAutomTypeDynamicMems * __attribute__((unused)) )
 {
     CellState * newStates = ptr->newStates;
     CellState * oldStates = ptr->oldStates;
@@ -178,9 +178,9 @@ static void errorTypeInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * _
     }
 }
 
-static void errorTypeStateAndPixelUpdateFunc( CellAuto * ptr __attribute__((unused)) ) { }
+static void errorTypeStateAndPixelUpdateFunc( CellAutom * ptr __attribute__((unused)) ) { }
 
-static const CellAutoTypeStaticMems errorStateStaticMems = {
+static const CellAutomTypeStaticMems errorStateStaticMems = {
     .stateCount = errorTypeStateCount,
     .stateColours = errorTypeStateColours,
     .initStateFunc = errorTypeInitStateFunc,
@@ -189,7 +189,7 @@ static const CellAutoTypeStaticMems errorStateStaticMems = {
 };
 
 
-static CellAutoTypeStaticMems getTypeParameters( CellAutoType type )
+static CellAutomTypeStaticMems getTypeParameters( CellAutomType type )
 {
     switch ( type )
     {
@@ -203,10 +203,10 @@ static CellAutoTypeStaticMems getTypeParameters( CellAutoType type )
 
 
 
-static void noDynamicMemsToFree( CellAutoTypeDynamicMems * ptr __attribute__((unused)) ) { };
+static void noDynamicMemsToFree( CellAutomTypeDynamicMems * ptr __attribute__((unused)) ) { };
 
 
-static void ( *getTypeDynamicMemDestroyer( CellAutoType type ) )( CellAutoTypeDynamicMems * )
+static void ( *getTypeDynamicMemDestroyer( CellAutomType type ) )( CellAutomTypeDynamicMems * )
 {
     switch ( type )
     {

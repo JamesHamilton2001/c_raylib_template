@@ -18,7 +18,7 @@ static const Color briansBraindefaultInitColours [ BRIANS_BRAIN_STATE_COUNT ] = 
 
 
 
-const CellAutoTypeStaticMems briansBrainTypeParameters = {
+const CellAutomTypeStaticMems briansBrainTypeParameters = {
     .stateCount = BRIANS_BRAIN_STATE_COUNT,
     .stateColours = briansBraindefaultInitColours,
     .initStateFunc = briansBrainInitStateFunc,
@@ -28,7 +28,7 @@ const CellAutoTypeStaticMems briansBrainTypeParameters = {
 
 
 
-void briansBrainInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * __attribute__((unused)) )
+void briansBrainInitStateFunc( CellAutom * ptr, const CellAutomTypeDynamicMems * __attribute__((unused)) )
 {
     for ( uint32_t i = 0; i < ptr->count; i++ )
     {
@@ -40,7 +40,7 @@ void briansBrainInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * __attr
 
 
 
-void briansBrainUpdateState( CellAuto * ptr )
+void briansBrainUpdateState( CellAutom * ptr )
 {
     const int rowCount = ptr->rows;
     const int colCount = ptr->cols;
@@ -99,7 +99,7 @@ void briansBrainUpdateState( CellAuto * ptr )
 
 
 
-void briansBrainUpdatePixelData( CellAuto * ptr )
+void briansBrainUpdatePixelData( CellAutom * ptr )
 {
     const Color * const stateColours = ptr->staticMems.stateColours;
     const CellState * states = ptr->newStates;

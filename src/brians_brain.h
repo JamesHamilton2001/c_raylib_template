@@ -25,15 +25,15 @@ typedef enum _BriansBrainState {
 
 
 
-extern const CellAutoTypeStaticMems briansBrainTypeParameters;
+extern const CellAutomTypeStaticMems briansBrainTypeParameters;
 
 
 
-void briansBrainInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * __attribute__((unused)) );
+void briansBrainInitStateFunc( CellAutom * ptr, const CellAutomTypeDynamicMems * __attribute__((unused)) );
 
-void briansBrainUpdateState( CellAuto * ptr );
+void briansBrainUpdateState( CellAutom * ptr );
 
-void briansBrainUpdatePixelData( CellAuto * ptr );
+void briansBrainUpdatePixelData( CellAutom * ptr );
 
 
 
