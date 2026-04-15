@@ -15,8 +15,8 @@
 
 typedef enum _GameOfLifeState {
 
-    GameOfLifeStateDead,
-    GameOfLifeStateLive,
+    GameOfLifeState_dead,
+    GameOfLifeState_live,
 
     GAME_OF_LIFE_STATE_COUNT
 
@@ -24,16 +24,15 @@ typedef enum _GameOfLifeState {
 
 
 
-extern const CellularAutomatonTypeParameters gameOfLifeTypeParameters;
+extern const CellAutoTypeStaticMems gameOfLifeStaticMems;
 
 
 
-void gameOfLifeInitStateFunc( CellularAutomaton * ptr );
+void gameOfLifeInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * __attribute__((unused)) );
 
-void gameOfLifeUpdateState( CellularAutomaton * ptr );
+void gameOfLifeUpdateState( CellAuto * ptr );
 
-void gameOfLifeUpdatePixelData( CellularAutomaton * ptr );
-
+void gameOfLifeUpdatePixelData( CellAuto * ptr );
 
 
 

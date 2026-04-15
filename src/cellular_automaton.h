@@ -8,40 +8,48 @@
 
 
 
-typedef struct _CellularAutomaton CellularAutomaton;
+typedef struct _CellAuto CellAuto;
 
 typedef uint32_t CellState;
 
 
+typedef void CellAutoTypeDynamicMems;
 
-typedef enum _CellularAutomatonType {
+typedef void CellAutoTypeParams;
 
-    CellularAutomatonTypeGameOfLife,
-    CellularAutomatonTypeBriansBrain,
+
+
+typedef enum _CellAutoType {
+
+    CellularAutomatonType_gameOfLife,
+    CellularAutomatonType_briansBrain,
+    CellularAutomatonType_langtonsAnt,
 
     CELLULAR_AUTOMATON_TYPE_COUNT
 
-} CellularAutomatonType;
+} CellAutoType;
 
 
 
-typedef struct _CellularAutomatonTypeParameters {
+typedef struct _CellAutoTypeStaticMems {
 
     uint32_t stateCount;
-    const Color * initStateColours;
-    void ( *initStateFunc )( CellularAutomaton * );
-    void ( *updateStateFunc )( CellularAutomaton * );
-    void ( *updatePixelDataFunc )( CellularAutomaton * );
+    const Color * stateColours;
+    void ( *initStateFunc )( CellAuto *, const CellAutoTypeParams * );
+    void ( *updateStateFunc )( CellAuto * );
+    void ( *updatePixelDataFunc )( CellAuto * );
 
-} CellularAutomatonTypeParameters;
+} CellAutoTypeStaticMems;
 
 
 
-typedef struct _CellularAutomaton {
+
+typedef struct _CellAuto {
 
     char name [ 128 ];
-    CellularAutomatonType type;
-    CellularAutomatonTypeParameters typeParams;
+    CellAutoType type;
+    CellAutoTypeStaticMems staticMems;
+    CellAutoTypeParams * dynamicMemsPtr;
 
     int32_t rows;
     int32_t cols;
@@ -50,8 +58,6 @@ typedef struct _CellularAutomaton {
     CellState * newStates;
     CellState * oldStates;
     CellState * stateBuffer [ 2 ];
-
-    Color * stateColours;
 
     Color * pixelData;
     Image image;
@@ -63,13 +69,14 @@ typedef struct _CellularAutomaton {
     int32_t seed;
     CellState * initialStates;
 
-} CellularAutomaton;
+} CellAuto;
 
 
 
 void CellularAutomatonInit(
-    CellularAutomaton * ptr,
-    CellularAutomatonType type,
+    CellAuto * ptr,
+    CellAutoType type,
+    CellAutoTypeParams * dynamicArgsPtr,
     int32_t rows,
     int32_t cols,
     const char * name,
@@ -78,11 +85,11 @@ void CellularAutomatonInit(
     CellState * initialStates
 );
 
-void CellularAutomatonDenit( CellularAutomaton * ptr );
+void CellularAutomatonDenit( CellAuto * ptr );
 
-void CellularAutomatonUpdate( CellularAutomaton * ptr );
+void CellularAutomatonUpdate( CellAuto * ptr );
 
-void CellularAutomatonDraw( const CellularAutomaton * ptr );
+void CellularAutomatonDraw( const CellAuto * ptr );
 
 
 

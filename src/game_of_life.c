@@ -17,9 +17,9 @@ static const Color gameOfLifeDefaultInitColours [ GAME_OF_LIFE_STATE_COUNT ] = {
 
 
 
-const CellularAutomatonTypeParameters gameOfLifeTypeParameters = {
+const CellAutoTypeStaticMems gameOfLifeStaticMems = {
     .stateCount = GAME_OF_LIFE_STATE_COUNT,
-    .initStateColours = gameOfLifeDefaultInitColours,
+    .stateColours = gameOfLifeDefaultInitColours,
     .initStateFunc = gameOfLifeInitStateFunc,
     .updateStateFunc = gameOfLifeUpdateState,
     .updatePixelDataFunc = gameOfLifeUpdatePixelData
@@ -27,10 +27,8 @@ const CellularAutomatonTypeParameters gameOfLifeTypeParameters = {
 
 
 
-void gameOfLifeInitStateFunc( CellularAutomaton * ptr )
+void gameOfLifeInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * __attribute__((unused)) )
 {
-    srand( ptr->seed );
-
     for ( uint32_t i = 0; i < ptr->count; i++ )
     {
         CellState s = rand( ) % GAME_OF_LIFE_STATE_COUNT;
@@ -41,7 +39,7 @@ void gameOfLifeInitStateFunc( CellularAutomaton * ptr )
 
 
 
-void gameOfLifeUpdateState( CellularAutomaton * ptr )
+void gameOfLifeUpdateState( CellAuto * ptr )
 {
     const int rowCount = ptr->rows;
     const int colCount = ptr->cols;
@@ -59,7 +57,7 @@ void gameOfLifeUpdateState( CellularAutomaton * ptr )
         const CellState * rowPtr     = oldStates + row * colCount;
         const CellState * rowDownPtr = oldStates + rowDown * colCount;
 
-        CellState *newRowPtr = newStates + row * colCount;
+        CellState * newRowPtr = newStates + row * colCount;
 
         for ( int col = 0; col < colCount; col++ )
         {
@@ -77,21 +75,26 @@ void gameOfLifeUpdateState( CellularAutomaton * ptr )
             liveNeighbourCount += ( rowDownPtr [ col      ] );
             liveNeighbourCount += ( rowDownPtr [ colRight ] );
 
-            const int selfIsLive = ( rowPtr[ col ] == GameOfLifeStateLive );
+            const int selfIsLive = ( rowPtr[ col ] == GameOfLifeState_live );
 
             newRowPtr[col] = ( liveNeighbourCount == 3 || ( selfIsLive && liveNeighbourCount == 2 ) )
-                ? GameOfLifeStateLive
-                : GameOfLifeStateDead;
+                ? GameOfLifeState_live
+                : GameOfLifeState_dead;
         }
     }
 }
 
 
 
-void gameOfLifeUpdatePixelData( CellularAutomaton * ptr )
+void gameOfLifeUpdatePixelData( CellAuto * ptr )
 {
+    const Color * const stateColours = ptr->staticMems.stateColours;
+    const CellState * states = ptr->newStates;
+
+    Color * pixelData = ptr->pixelData;
+
     for ( uint32_t i = 0; i < ptr->count; i++ )
     {
-        ptr->pixelData[ i ] = ptr->stateColours[ ptr->newStates[ i ] ];
+        *pixelData++ = stateColours[ *states++ ];
     }
 }

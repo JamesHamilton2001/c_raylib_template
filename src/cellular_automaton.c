@@ -8,30 +8,20 @@
 
 #include "game_of_life.h"
 #include "brians_brain.h"
+#include "langtons_ant.h"
 
 
 
-// static const CellularAutomatonTypeParameters * getTypeParametersPtr( CellularAutomatonType type )
-static CellularAutomatonTypeParameters getTypeParameters( CellularAutomatonType type )
-{
-    switch ( type )
-    {
-        case CellularAutomatonTypeGameOfLife:
-            return gameOfLifeTypeParameters;
+static CellAutoTypeStaticMems getTypeParameters( CellAutoType type );
 
-        case CellularAutomatonTypeBriansBrain:
-            return briansBrainTypeParameters;
-
-        default:
-            return gameOfLifeTypeParameters;
-    }
-}
+static void ( *getTypeDynamicMemDestroyer( CellAutoType type ) )( CellAutoTypeDynamicMems * );
 
 
 
 void CellularAutomatonInit(
-    CellularAutomaton * ptr,
-    CellularAutomatonType type,
+    CellAuto * ptr,
+    CellAutoType type,
+    CellAutoTypeParams * dynamicArgsPtr,
     int32_t rows,
     int32_t cols,
     const char * name,
@@ -39,15 +29,14 @@ void CellularAutomatonInit(
     uint32_t seed,
     CellState * initialStates
 ) {
-    ptr->typeParams = getTypeParameters( type );
+    memset( ptr, 0x00, sizeof( *ptr ) );
+
+    ptr->staticMems = getTypeParameters( type );
 
     ptr->type = type;
 
     strncpy( ptr->name, name, sizeof( ptr->name ) - 1 );
     ptr->name[ sizeof( ptr->name ) - 1 ] = '\0';
-
-    ptr->stateColours = malloc( ptr->typeParams.stateCount * sizeof( Color ) );
-    memcpy( ptr->stateColours, ptr->typeParams.initStateColours, ptr->typeParams.stateCount * sizeof( Color ) );
 
     ptr->rows = rows;
     ptr->cols = cols;
@@ -84,41 +73,45 @@ void CellularAutomatonInit(
         memcpy( ptr->initialStates, initialStates, ptr->count * sizeof( CellState ) );
     }
 
-    ptr->typeParams.initStateFunc( ptr );
+    srand( seed );
+
+    ptr->staticMems.initStateFunc( ptr, dynamicArgsPtr );
 }
 
 
 
-void CellularAutomatonDenit( CellularAutomaton * ptr )
+void CellularAutomatonDenit( CellAuto * ptr )
 {
+    getTypeDynamicMemDestroyer( ptr->type )( ptr->dynamicMemsPtr );
+    free( ptr->dynamicMemsPtr );
+
     UnloadTexture( ptr->texture );
 
-    free( ptr->stateColours );
     free( ptr->stateBuffer[ 0 ] );
     free( ptr->stateBuffer[ 1 ] );
-    free( ptr->initialStates );
     free( ptr->pixelData );
+    free( ptr->initialStates );
 
     memset( ptr, 0x00, sizeof( *ptr ) );
 }
 
 
 
-void CellularAutomatonUpdate( CellularAutomaton * ptr )
+void CellularAutomatonUpdate( CellAuto * ptr )
 {
     CellState * temp = ptr->oldStates;
     ptr->oldStates = ptr->newStates;
     ptr->newStates = temp;
 
-    ptr->typeParams.updateStateFunc( ptr );
-    ptr->typeParams.updatePixelDataFunc( ptr );
+    ptr->staticMems.updateStateFunc( ptr );
+    ptr->staticMems.updatePixelDataFunc( ptr );
 
     ptr->iterationCount++;
 }
 
 
 
-void CellularAutomatonDraw( const CellularAutomaton * ptr )
+void CellularAutomatonDraw( const CellAuto * ptr )
 {
     float screenWidth = (float)GetScreenWidth( );
     float screenHeight = (float)GetScreenHeight( );
@@ -150,4 +143,77 @@ void CellularAutomatonDraw( const CellularAutomaton * ptr )
     UpdateTexture( ptr->texture, ptr->pixelData );
 
     DrawTexturePro( ptr->texture, src, dst, origin, rotation, WHITE );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+static const uint32_t errorTypeStateCount = 2;
+
+static const Color errorTypeStateColours [ 2 ] = { BLACK, MAGENTA };
+
+static void errorTypeInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * __attribute__((unused)) )
+{
+    CellState * newStates = ptr->newStates;
+    CellState * oldStates = ptr->oldStates;
+    Color     * pixelData = ptr->pixelData;
+
+    const int32_t cols = ptr->cols;
+
+    for ( uint32_t i = 0; i < ptr->count; i++ )
+    {
+        const CellState s = ( ( i % cols ) + ( i / cols ) ) % 2;
+        *newStates++ = s;
+        *oldStates++ = s;
+        *pixelData++ = *(errorTypeStateColours + s);
+    }
+}
+
+static void errorTypeStateAndPixelUpdateFunc( CellAuto * ptr __attribute__((unused)) ) { }
+
+static const CellAutoTypeStaticMems errorStateStaticMems = {
+    .stateCount = errorTypeStateCount,
+    .stateColours = errorTypeStateColours,
+    .initStateFunc = errorTypeInitStateFunc,
+    .updateStateFunc = errorTypeStateAndPixelUpdateFunc,
+    .updatePixelDataFunc = errorTypeStateAndPixelUpdateFunc
+};
+
+
+static CellAutoTypeStaticMems getTypeParameters( CellAutoType type )
+{
+    switch ( type )
+    {
+        case CellularAutomatonType_gameOfLife:  return gameOfLifeStaticMems;
+        case CellularAutomatonType_briansBrain: return briansBrainTypeParameters;
+        case CellularAutomatonType_langtonsAnt: return langtonsAntTypeParameters;
+
+        default: return errorStateStaticMems;
+    }
+}
+
+
+
+static void noDynamicMemsToFree( CellAutoTypeDynamicMems * ptr __attribute__((unused)) ) { };
+
+
+static void ( *getTypeDynamicMemDestroyer( CellAutoType type ) )( CellAutoTypeDynamicMems * )
+{
+    switch ( type )
+    {
+        case CellularAutomatonType_gameOfLife:  return noDynamicMemsToFree;
+        case CellularAutomatonType_briansBrain: return noDynamicMemsToFree;
+        case CellularAutomatonType_langtonsAnt: return LangtonsAntParamsDestroy;
+
+        default: return noDynamicMemsToFree;
+    }
 }

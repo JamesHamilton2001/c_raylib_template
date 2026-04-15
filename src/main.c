@@ -8,6 +8,9 @@
 
 #include "cellular_automaton.h"
 #include "brians_brain.h"
+#include "game_of_life.h"
+#include "langtons_ant.h"
+
 
 
 
@@ -17,7 +20,7 @@ int targetFps;
 
 float fade;
 
-CellularAutomaton cellularAutomaton;
+CellAuto cellularAutomaton;
 
 RenderTexture2D targetRenderTexure;
 
@@ -52,35 +55,44 @@ int main()
 
 static void init( void )
 {
-    // screenWidth = 1600;
-    // screenHeight = 900;
-    // targetFps = 240;
+    screenWidth = 1920, screenHeight = 1080;
+    // screenWidth = 1600, screenHeight = 900;
 
-    // screenWidth = 2650;
-    // screenHeight = 1440;
-    // targetFps = 240;
-
-    screenWidth = 512;
-    screenHeight = 512;
     targetFps = 240;
 
-    fade = 0.05f;
+    fade = 1.0f / 64.0f;
 
     InitWindow( screenWidth, screenHeight, "c_raylib_template" );
     SetTargetFPS( targetFps );
 
-    // CellularAutomatonType type = CellularAutomatonTypeBriansBrain;
-    CellularAutomatonType type = CellularAutomatonTypeGameOfLife;
+    targetRenderTexure = LoadRenderTexture( screenWidth, screenHeight );
+
+
+
     const char * name = "cellular automaton development";
-    int32_t rows = screenHeight;
-    int32_t cols = screenWidth;
+    int32_t rows = (uint32_t)( (float)screenHeight * 0.25f );
+    int32_t cols = (uint32_t)( (float)screenWidth  * 0.25f );
     uint32_t id = 0;
     uint32_t seed = 0x42424242;
-    CellState * initialStates = NULL;
 
-    CellularAutomatonInit( &cellularAutomaton, type, rows, cols, name, id, seed, initialStates );
+    // uint32_t antCount = 2;
+    // uint32_t antInitPositions [ 2 ];
+    // int32_t antRows [ 2 ];
+    // int32_t antCols [ 2 ];
+    // antRows[ 0 ] = 1 * ( rows / ( 2 * antCount ) );
+    // antRows[ 1 ] = 3 * ( rows / ( 2 * antCount ) );
+    // antCols[ 0 ] = 1 * ( cols / ( 2 * antCount ) );
+    // antCols[ 1 ] = 3 * ( cols / ( 2 * antCount ) );
+    // antInitPositions[ 0 ] = antRows[ 0 ] * cols + antCols[ 0 ];
+    // antInitPositions[ 1 ] = antRows[ 1 ] * cols + antCols[ 1 ];
+    // LangtonsAntParams lap  = { .antCount=antCount, .antInitPositions=antInitPositions, .antRows=antRows, .antCols=antCols };
+    LangtonsAntParams lap  = { .antCount=1024, .antInitPositions=NULL, .antRows=NULL, .antCols=NULL };
 
-    targetRenderTexure = LoadRenderTexture( screenWidth, screenHeight );
+
+    // CellularAutomatonInit( &cellularAutomaton, CellularAutomatonType_briansBrain, NULL, rows, cols, name, id, seed, NULL );
+    // CellularAutomatonInit( &cellularAutomaton, CellularAutomatonType_gameOfLife,  NULL, rows, cols, name, id, seed, NULL );
+    CellularAutomatonInit( &cellularAutomaton, CellularAutomatonType_langtonsAnt, &lap, rows, cols, name, id, seed, NULL );
+    // CellularAutomatonInit( &cellularAutomaton, CELLULAR_AUTOMATON_TYPE_COUNT,    NULL, rows, cols, name, id, seed, NULL );
 }
 
 
@@ -106,6 +118,7 @@ static void draw( void )
     BeginTextureMode( targetRenderTexure );
 
     DrawRectangle( 0, 0, targetRenderTexure.texture.width, targetRenderTexure.texture.height, Fade( BLACK, fade ) );
+    // ClearBackground( BLACK );
 
     CellularAutomatonDraw( &cellularAutomaton );
 

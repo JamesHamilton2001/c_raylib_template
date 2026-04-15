@@ -15,9 +15,9 @@
 
 typedef enum _BriansBrainState {
 
-    BriansBrainStateDead,
-    BriansBrainStateDying,
-    BriansBrainStateLive,
+    BriansBrainState_dead,
+    BriansBrainState_dying,
+    BriansBrainState_live,
 
     BRIANS_BRAIN_STATE_COUNT
 
@@ -25,16 +25,15 @@ typedef enum _BriansBrainState {
 
 
 
-extern const CellularAutomatonTypeParameters briansBrainTypeParameters;
+extern const CellAutoTypeStaticMems briansBrainTypeParameters;
 
 
 
-void briansBrainInitStateFunc( CellularAutomaton * ptr );
+void briansBrainInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * __attribute__((unused)) );
 
-void briansBrainUpdateState( CellularAutomaton * ptr );
+void briansBrainUpdateState( CellAuto * ptr );
 
-void briansBrainUpdatePixelData( CellularAutomaton * ptr );
-
+void briansBrainUpdatePixelData( CellAuto * ptr );
 
 
 

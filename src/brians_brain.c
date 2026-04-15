@@ -18,9 +18,9 @@ static const Color briansBraindefaultInitColours [ BRIANS_BRAIN_STATE_COUNT ] = 
 
 
 
-const CellularAutomatonTypeParameters briansBrainTypeParameters = {
+const CellAutoTypeStaticMems briansBrainTypeParameters = {
     .stateCount = BRIANS_BRAIN_STATE_COUNT,
-    .initStateColours = briansBraindefaultInitColours,
+    .stateColours = briansBraindefaultInitColours,
     .initStateFunc = briansBrainInitStateFunc,
     .updateStateFunc = briansBrainUpdateState,
     .updatePixelDataFunc = briansBrainUpdatePixelData
@@ -28,10 +28,8 @@ const CellularAutomatonTypeParameters briansBrainTypeParameters = {
 
 
 
-void briansBrainInitStateFunc( CellularAutomaton * ptr )
+void briansBrainInitStateFunc( CellAuto * ptr, const CellAutoTypeParams * __attribute__((unused)) )
 {
-    srand( ptr->seed );
-
     for ( uint32_t i = 0; i < ptr->count; i++ )
     {
         CellState s = rand( ) % BRIANS_BRAIN_STATE_COUNT;
@@ -42,7 +40,7 @@ void briansBrainInitStateFunc( CellularAutomaton * ptr )
 
 
 
-void briansBrainUpdateState( CellularAutomaton * ptr )
+void briansBrainUpdateState( CellAuto * ptr )
 {
     const int rowCount = ptr->rows;
     const int colCount = ptr->cols;
@@ -65,33 +63,33 @@ void briansBrainUpdateState( CellularAutomaton * ptr )
         {
             switch ( rowPtr[ col ] )
             {
-                case BriansBrainStateLive:
-                    newRowPtr[ col ] = BriansBrainStateDying;
+                case BriansBrainState_live:
+                    newRowPtr[ col ] = BriansBrainState_dying;
                     break;
 
-                case BriansBrainStateDying:
-                    newRowPtr[ col ] = BriansBrainStateDead;
+                case BriansBrainState_dying:
+                    newRowPtr[ col ] = BriansBrainState_dead;
                     break;
 
-                case BriansBrainStateDead:
+                case BriansBrainState_dead:
                 default:
                 {
                     const int colLeft  = ( col == 0 ) ? ( colCount - 1 ) : ( col - 1 );
                     const int colRight = ( col == colCount - 1 ) ? 0 : ( col + 1 );
 
                     const int liveNeighbourCount =
-                        ( rowUpPtr   [ colLeft  ] == BriansBrainStateLive ) +
-                        ( rowUpPtr   [ col      ] == BriansBrainStateLive ) +
-                        ( rowUpPtr   [ colRight ] == BriansBrainStateLive ) +
-                        ( rowPtr     [ colLeft  ] == BriansBrainStateLive ) +
-                        ( rowPtr     [ colRight ] == BriansBrainStateLive ) +
-                        ( rowDownPtr [ colLeft  ] == BriansBrainStateLive ) +
-                        ( rowDownPtr [ col      ] == BriansBrainStateLive ) +
-                        ( rowDownPtr [ colRight ] == BriansBrainStateLive );
+                        ( rowUpPtr   [ colLeft  ] == BriansBrainState_live ) +
+                        ( rowUpPtr   [ col      ] == BriansBrainState_live ) +
+                        ( rowUpPtr   [ colRight ] == BriansBrainState_live ) +
+                        ( rowPtr     [ colLeft  ] == BriansBrainState_live ) +
+                        ( rowPtr     [ colRight ] == BriansBrainState_live ) +
+                        ( rowDownPtr [ colLeft  ] == BriansBrainState_live ) +
+                        ( rowDownPtr [ col      ] == BriansBrainState_live ) +
+                        ( rowDownPtr [ colRight ] == BriansBrainState_live );
 
                     newRowPtr[ col ] = ( liveNeighbourCount == 2 )
-                        ? BriansBrainStateLive
-                        : BriansBrainStateDead;
+                        ? BriansBrainState_live
+                        : BriansBrainState_dead;
                     break;
                 }
             }
@@ -101,10 +99,15 @@ void briansBrainUpdateState( CellularAutomaton * ptr )
 
 
 
-void briansBrainUpdatePixelData( CellularAutomaton * ptr )
+void briansBrainUpdatePixelData( CellAuto * ptr )
 {
+    const Color * const stateColours = ptr->staticMems.stateColours;
+    const CellState * states = ptr->newStates;
+
+    Color * pixelData = ptr->pixelData;
+
     for ( uint32_t i = 0; i < ptr->count; i++ )
     {
-        ptr->pixelData[ i ] = ptr->stateColours[ ptr->newStates[ i ] ];
+        *pixelData++ = stateColours[ *states++ ];
     }
 }
