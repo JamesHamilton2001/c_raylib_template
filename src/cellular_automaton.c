@@ -113,36 +113,9 @@ void CellAutomUpdate( CellAutom * ptr )
 
 void CellAutomDraw( const CellAutom * ptr )
 {
-    float screenWidth = (float)GetScreenWidth( );
-    float screenHeight = (float)GetScreenHeight( );
-
-    float texWidth = (float)ptr->cols;
-    float texHeight = (float)ptr->rows;
-
-    float xScale = screenWidth / texWidth;
-    float yScale = screenHeight / texHeight;
-    float scale = ( xScale < yScale ) ? xScale : yScale;
-
-    float drawWidth = texWidth * scale;
-    float drawHeight = texHeight * scale;
-
-
-    Rectangle src = { 0.0f, 0.0f, texWidth, texHeight };
-
-    Rectangle dst = {
-        ( screenWidth - drawWidth ) * 0.5f,
-        ( screenHeight - drawHeight ) * 0.5f,
-        drawWidth,
-        drawHeight
-    };
-
-    Vector2 origin = { 0.0f, 0.0f };
-
-    float rotation = 0.0f;
-
     UpdateTexture( ptr->texture, ptr->pixelData );
 
-    DrawTexturePro( ptr->texture, src, dst, origin, rotation, WHITE );
+    DrawTexture( ptr->texture, 0, 0, WHITE );
 }
 
 

@@ -64,15 +64,16 @@ static void init( void )
     InitWindow( screenWidth, screenHeight, "c_raylib_template" );
     SetTargetFPS( targetFps );
 
-    targetRenderTexure = LoadRenderTexture( screenWidth, screenHeight );
-
-
 
     const char * name = "cellular automaton development";
     int32_t rows = (uint32_t)( (float)screenHeight * 0.25f );
     int32_t cols = (uint32_t)( (float)screenWidth  * 0.25f );
     uint32_t id = 0;
     uint32_t seed = 0x42424242;
+
+    // CellAutomInit( &cellAutom, CellularAutomatonType_gameOfLife,  NULL, rows, cols, name, id, seed, NULL );
+
+    // CellAutomInit( &cellAutom, CellularAutomatonType_briansBrain, NULL, rows, cols, name, id, seed, NULL );
 
     // uint32_t antCount = 2;
     // uint32_t antInitPositions [ 2 ];
@@ -85,13 +86,14 @@ static void init( void )
     // antInitPositions[ 0 ] = antRows[ 0 ] * cols + antCols[ 0 ];
     // antInitPositions[ 1 ] = antRows[ 1 ] * cols + antCols[ 1 ];
     // LangtonsAntParams lap  = { .antCount=antCount, .antInitPositions=antInitPositions, .antRows=antRows, .antCols=antCols };
+    // CellAutomInit( &cellAutom, CellularAutomatonType_langtonsAnt, &lap, rows, cols, name, id, seed, NULL );
+
     LangtonsAntParams lap  = { .antCount=1024, .antInitPositions=NULL, .antRows=NULL, .antCols=NULL };
-
-
-    // CellAutomInit( &cellAutom, CellularAutomatonType_briansBrain, NULL, rows, cols, name, id, seed, NULL );
-    // CellAutomInit( &cellAutom, CellularAutomatonType_gameOfLife,  NULL, rows, cols, name, id, seed, NULL );
     CellAutomInit( &cellAutom, CellularAutomatonType_langtonsAnt, &lap, rows, cols, name, id, seed, NULL );
-    // CellAutomInit( &cellAutom, CELLULAR_AUTOMATON_TYPE_COUNT,    NULL, rows, cols, name, id, seed, NULL );
+
+    // CellAutomInit( &cellAutom, CELLULAR_AUTOMATON_TYPE_COUNT, NULL, rows, cols, name, id, seed, NULL );
+
+    targetRenderTexure = LoadRenderTexture( cellAutom.texture.width, cellAutom.texture.height );
 }
 
 
@@ -114,9 +116,12 @@ static void update( void )
 
 static void draw( void )
 {
+    const int screenWidth = GetScreenWidth( );
+    const int screenHeight = GetScreenHeight( );
+
     BeginTextureMode( targetRenderTexure );
 
-    DrawRectangle( 0, 0, targetRenderTexure.texture.width, targetRenderTexure.texture.height, Fade( BLACK, fade ) );
+    DrawRectangle( 0, 0, screenWidth, screenHeight, Fade( BLACK, fade ) );
     // ClearBackground( BLACK );
 
     CellAutomDraw( &cellAutom );
@@ -138,8 +143,8 @@ static void draw( void )
     Rectangle dst = {
         0.0f,
         0.0f,
-        (float)targetRenderTexure.texture.width,
-        (float)targetRenderTexure.texture.height,
+        (float)screenWidth,
+        (float)screenHeight,
     };
 
     Vector2 origin = { 0.0f, 0.0f };

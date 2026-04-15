@@ -44,7 +44,6 @@ typedef struct _CellAutomTypeStaticMems {
 
 
 
-
 typedef struct _CellAutom {
 
     CellAutomType type;
