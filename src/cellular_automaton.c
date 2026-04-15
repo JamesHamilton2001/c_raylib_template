@@ -35,9 +35,6 @@ void CellAutomInit(
 
     ptr->type = type;
 
-    strncpy( ptr->name, name, sizeof( ptr->name ) - 1 );
-    ptr->name[ sizeof( ptr->name ) - 1 ] = '\0';
-
     ptr->rows = rows;
     ptr->cols = cols;
     ptr->count = rows * cols;
@@ -58,6 +55,9 @@ void CellAutomInit(
     ptr->texture = LoadTextureFromImage( ptr->image );
 
     ptr->iterationCount = 0;
+
+    strncpy( ptr->name, name, sizeof( ptr->name ) - 1 );
+    ptr->name[ sizeof( ptr->name ) - 1 ] = '\0';
 
     ptr->id = id;
 

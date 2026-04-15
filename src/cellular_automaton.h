@@ -47,7 +47,6 @@ typedef struct _CellAutomTypeStaticMems {
 
 typedef struct _CellAutom {
 
-    char name [ 128 ];
     CellAutomType type;
     CellAutomTypeStaticMems staticMems;
     CellAutomTypeDynamicMems * dynamicMemsPtr;
@@ -66,6 +65,7 @@ typedef struct _CellAutom {
 
     uint64_t iterationCount;
 
+    char name [ 128 ];
     uint32_t id;
     int32_t seed;
     CellState * initialStates;
