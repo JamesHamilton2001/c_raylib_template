@@ -89,7 +89,7 @@ void CellAutomDeinit( CellAutom * ptr );
 
 void CellAutomUpdate( CellAutom * ptr );
 
-void CellAutomDraw( const CellAutom * ptr );
+void CellUpdateTexture( const CellAutom * ptr );
 
 
 

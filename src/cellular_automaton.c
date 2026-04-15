@@ -53,6 +53,7 @@ void CellAutomInit(
     ptr->image.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
 
     ptr->texture = LoadTextureFromImage( ptr->image );
+    SetTextureFilter( ptr->texture, TEXTURE_FILTER_POINT );
 
     ptr->iterationCount = 0;
 
@@ -111,11 +112,9 @@ void CellAutomUpdate( CellAutom * ptr )
 
 
 
-void CellAutomDraw( const CellAutom * ptr )
+void CellUpdateTexture( const CellAutom * ptr )
 {
     UpdateTexture( ptr->texture, ptr->pixelData );
-
-    DrawTexture( ptr->texture, 0, 0, WHITE );
 }
 
 
@@ -162,6 +161,7 @@ static const CellAutomTypeStaticMems errorStateStaticMems = {
 };
 
 
+
 static CellAutomTypeStaticMems getTypeParameters( CellAutomType type )
 {
     switch ( type )
@@ -177,7 +177,6 @@ static CellAutomTypeStaticMems getTypeParameters( CellAutomType type )
 
 
 static void noDynamicMemsToFree( CellAutomTypeDynamicMems * ptr __attribute__((unused)) ) { };
-
 
 static void ( *getTypeDynamicMemDestroyer( CellAutomType type ) )( CellAutomTypeDynamicMems * )
 {
