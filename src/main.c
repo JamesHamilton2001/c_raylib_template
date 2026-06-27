@@ -65,9 +65,9 @@ int main()
 
 static void init( void )
 {
-    int screenWidth = 2560, screenHeight = 1440;
+    // int screenWidth = 2560, screenHeight = 1440;
     // int screenWidth = 1920, screenHeight = 1080;
-    // int screenWidth = 1600, screenHeight = 900;
+    int screenWidth = 1600, screenHeight = 900;
 
     int targetFps = 440;
 
@@ -81,13 +81,14 @@ static void init( void )
     SetTargetFPS( targetFps );
 
 
+    float rowColCoef = 1.0f;
     const char * name = "cellular automaton development";
-    int32_t rows = (uint32_t)( (float)screenHeight * 0.25f );
-    int32_t cols = (uint32_t)( (float)screenWidth  * 0.25f );
+    int32_t rows = (uint32_t)( (float)screenHeight * rowColCoef );
+    int32_t cols = (uint32_t)( (float)screenWidth  * rowColCoef );
     uint32_t id = 0;
     uint32_t seed = 0x42424242;
 
-    CellAutomInit( &cellAutom, CellularAutomatonType_gameOfLife,  NULL, rows, cols, name, id, seed, NULL );
+    // CellAutomInit( &cellAutom, CellularAutomatonType_gameOfLife,  NULL, rows, cols, name, id, seed, NULL );
 
     // CellAutomInit( &cellAutom, CellularAutomatonType_briansBrain, NULL, rows, cols, name, id, seed, NULL );
 
@@ -104,8 +105,8 @@ static void init( void )
     // LangtonsAntParams lap  = { .antCount=antCount, .antInitPositions=antInitPositions, .antRows=antRows, .antCols=antCols };
     // CellAutomInit( &cellAutom, CellularAutomatonType_langtonsAnt, &lap, rows, cols, name, id, seed, NULL );
 
-    // LangtonsAntParams lap  = { .antCount=1024, .antInitPositions=NULL, .antRows=NULL, .antCols=NULL };
-    // CellAutomInit( &cellAutom, CellularAutomatonType_langtonsAnt, &lap, rows, cols, name, id, seed, NULL );
+    LangtonsAntParams lap  = { .antCount=1024, .antInitPositions=NULL, .antRows=NULL, .antCols=NULL };
+    CellAutomInit( &cellAutom, CellularAutomatonType_langtonsAnt, &lap, rows, cols, name, id, seed, NULL );
 
     // CellAutomInit( &cellAutom, CELLULAR_AUTOMATON_TYPE_COUNT, NULL, rows, cols, name, id, seed, NULL );
 
