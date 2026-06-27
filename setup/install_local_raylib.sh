@@ -14,7 +14,7 @@ rlname="$rl-$tags"
 rltar="$rlname.tar.gz"
 rlurl="https://github.com/raysan5/raylib/archive/refs/tags/$tags.tar.gz"
 
-# get to script location (project/dev)
+# get to script location
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir/.." || { echo "unable to cd project root"; exit 1; }
 
@@ -25,29 +25,43 @@ libsrcdir="$libdir/src"
 libreldir="$libdir/rel"
 libdbgdir="$libdir/dbg"
 
-# setup local raylib space and work dir for download and compile
 mkdir -p "$libdir" "$libsrcdir" "$libreldir" "$libdbgdir"
 
 echo "downloading local ${rlname}..."
 
-# download raylib source, unpack, cd to src and copy to local lib src
 cd "$libsrcdir" || { echo "unable to cd lib work directory"; rm -rf "$libdir"; exit 1; }
+
 curl -fL -o "$rltar" "$rlurl"
 tar -xzf "$rltar"
-rm "$libsrcdir/$rltar"
+rm -f "$rltar"
 
-cd "$rlname/src/"
+cd "$rlname/src"
 
-# build release lib
+copy_library()
+{
+    local dest="$1"
+
+    local rlib
+    rlib="$(find .. -maxdepth 2 -name libraylib.a | head -n1)"
+
+    if [[ -z "$rlib" ]]; then
+        echo "Failed to locate libraylib.a"
+        exit 1
+    fi
+
+    cp -a "$rlib" "$dest/"
+}
+
+# Build release
 make PLATFORM=PLATFORM_DESKTOP RAYLIB_BUILD_MODE=RELEASE
-cp -a libraylib.a "$libreldir/"
+copy_library "$libreldir"
 make clean
 
-# build debug lib
+# Build debug
 make PLATFORM=PLATFORM_DESKTOP RAYLIB_BUILD_MODE=DEBUG
-cp -a libraylib.a "$libdbgdir/"
+copy_library "$libdbgdir"
 make clean
 
 echo "$tags" > "$libdir/raylib.version"
 
-echo "\"${prjdir}\" local raylib$tags installed!"
+echo "\"${prjdir}\" local raylib ${tags} installed!"

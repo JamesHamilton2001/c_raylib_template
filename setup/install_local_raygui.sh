@@ -27,6 +27,15 @@ libdbgdir="$libdir/dbg"
 
 mkdir -p "$libdir" "$libsrcdir" "$libreldir" "$libdbgdir"
 
+# Ensure raylib is installed
+if [[ ! -f "$libdir/raylib.version" ]]; then
+    echo "raylib is not installed. Run install_local_raylib.sh first."
+    exit 1
+fi
+
+rlversion="$(cat "$libdir/raylib.version")"
+rlinc="$libsrcdir/raylib-$rlversion/src"
+
 echo "\"${prjdir}\" downloading ${rgname}..."
 
 cd "$libsrcdir" || { echo "unable to cd lib work directory"; exit 1; }
@@ -41,16 +50,22 @@ cat > "$libsrcdir/raygui_impl.c" <<EOF
 EOF
 
 # release
-gcc -c -O2 -DNDEBUG -fPIC "$libsrcdir/raygui_impl.c" \
+gcc -c -O2 -DNDEBUG -fPIC \
+    "$libsrcdir/raygui_impl.c" \
     -I"$libsrcdir/$rgname/src" \
+    -I"$rlinc" \
     -o "$libsrcdir/raygui.o"
+
 ar rcs "$libreldir/libraygui.a" "$libsrcdir/raygui.o"
 rm -f "$libsrcdir/raygui.o"
 
 # debug
-gcc -c -g -O0 -DDEBUG -fPIC "$libsrcdir/raygui_impl.c" \
+gcc -c -g -O0 -DDEBUG -fPIC \
+    "$libsrcdir/raygui_impl.c" \
     -I"$libsrcdir/$rgname/src" \
+    -I"$rlinc" \
     -o "$libsrcdir/raygui.o"
+
 ar rcs "$libdbgdir/libraygui.a" "$libsrcdir/raygui.o"
 rm -f "$libsrcdir/raygui.o" "$libsrcdir/raygui_impl.c"
 
